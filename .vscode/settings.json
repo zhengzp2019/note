@@ -11,10 +11,10 @@
       "other": "on",
       "comments": "on",
       "strings": "on"
+    },
+    "editor.codeActionsOnSave": {
+      "source.fixAll.markdownlint": "always"
     }
-  },
-  "editor.codeActionsOnSave": {
-    "source.fixAll.markdownlint": "always"
   },
   "markdown.copyFiles.destination": {
     "**/*.md": "../../resources/image/"

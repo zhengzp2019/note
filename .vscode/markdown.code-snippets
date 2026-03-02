@@ -30,6 +30,11 @@
     "body": ["[${1:text}](${2:https://example.com})"],
     "description": "Insert markdown link"
   },
+  "Markdown Auto Link": {
+    "prefix": "autolink",
+    "body": ["<${1:https://example.com}>"],
+    "description": "Insert bare URL as markdown autolink (MD034-compliant)"
+  },
   "Markdown Bold": {
     "prefix": "bold",
     "body": ["**${1:text}**"],

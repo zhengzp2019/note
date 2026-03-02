@@ -1,4 +1,4 @@
-![](<../../resources/image/img-20251221163556.png>)
+![image](<../../resources/image/img-20251221163556.png>)
 
 # LangChain（大模型应用开发框架）
 
@@ -8,16 +8,16 @@
 
 ## 1.2 LangChain的优势
 
-![](<../../resources/image/img-20251221164406.png>)
+![image](<../../resources/image/img-20251221164406.png>)
 
 ## 1.3 宏观架构设计
 
-![](<../../resources/image/img-20251221164424.png>)
+![image](<../../resources/image/img-20251221164424.png>)
 上图展示了LangChain（V3.0版本）生态系统的主要组件及其分类，分为三个层次：架构（Architecture）、组件（Components）和部署（deployment）。
 
 ## 1.4 核心组件
 
-![](<../../resources/image/img-20251221165048.png>)
+![image](<../../resources/image/img-20251221165048.png>)
 
 ### 1.4.1 model I/O
 
@@ -25,17 +25,17 @@
 
 ### 1.4.3 Memory
 
-![](<../../resources/image/img-20251224095703.png>)
+![image](<../../resources/image/img-20251224095703.png>)
 
 ### 1.4.4 Tools
 
-![](<../../resources/image/img-20251224095756.png>)
+![image](<../../resources/image/img-20251224095756.png>)
 使用流程
-![](<../../resources/image/img-20251224095914.png>)
+![image](<../../resources/image/img-20251224095914.png>)
 
 ### 1.4.5 Agent
 
-![](<../../resources/image/img-20251224100228.png>)
+![image](<../../resources/image/img-20251224100228.png>)
 **工作模式**
 
 - Function Calling：方法调用模式，可以利用外部提供的一些工具（例如：数据库、文本编辑器等）辅助LLM完成任务。

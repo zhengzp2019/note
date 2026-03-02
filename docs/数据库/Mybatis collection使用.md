@@ -3,7 +3,7 @@
 ??? info
 在执行sql查询时，希望将查询的一列整理成list，并映射到java 实体类的一个list属性中。
 
-![](<../../resources/image/img-20251210184600.png>)
+![image](<../../resources/image/img-20251210184600.png>)
 
 ## 使用方式
 
