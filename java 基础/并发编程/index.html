@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/java%20%E5%9F%BA%E7%A1%80/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>并发编程 - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5e76\u53d1\u7f16\u7a0b", url: "#_top", children: [
+              {title: "\u4ec0\u4e48\u662f\u7528\u6237\u7ebf\u7a0b\uff1f\u4ec0\u4e48\u662f\u5b88\u62a4\u7ebf\u7a0b\uff1f", url: "#_2" },
+              {title: "\u7ebf\u7a0b", url: "#_3" },
+              {title: "\u7ebf\u7a0b\u6c60", url: "#_4" },
+              {title: "\u7ebf\u7a0b\u6c60\u7684\u76f8\u5173\u53c2\u6570", url: "#_5" },
+              {title: "\u7ebf\u7a0b\u6c60\u7684\u51e0\u79cd\u72b6\u6001", url: "#_6" },
+              {title: "\u5173\u95ed\u7ebf\u7a0b\u7684\u4e24\u79cd\u65b9\u5f0f", url: "#_7" },
+              {title: "\u7ebf\u7a0b\u6c60\u7684\u62d2\u7edd\u7b56\u7565", url: "#_8" },
+              {title: "Future", url: "#future" },
+              {title: "FutureTask", url: "#futuretask" },
+              {title: "", url: "#_9" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-link">
+        异步编程
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
+        java8 新特性
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">并发编程</h1>
+<h2 id="_2">什么是用户线程？什么是守护线程？</h2>
+<blockquote>
+<p>JVM退出条件是进程中不包含任何的守护线程</p>
+</blockquote>
+<h2 id="_3">线程</h2>
+<h2 id="_4">线程池</h2>
+<h2 id="_5">线程池的相关参数</h2>
+<h2 id="_6">线程池的几种状态</h2>
+<p><img alt="" src="../../image/Pasted%20image%2020251028094255.png" /></p>
+<h2 id="_7">关闭线程的两种方式</h2>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">shutdownNow</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tasks</span><span class="p">;</span><span class="w">  </span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="w"> </span><span class="n">mainLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">mainLock</span><span class="p">;</span><span class="w">  </span>
+<span class="w">    </span><span class="n">mainLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span><span class="w">  </span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">checkShutdownAccess</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="n">advanceRunState</span><span class="p">(</span><span class="n">STOP</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">interruptWorkers</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="n">tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drainQueue</span><span class="p">();</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mainLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">    </span><span class="n">tryTerminate</span><span class="p">();</span><span class="w">  </span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">tasks</span><span class="p">;</span><span class="w">  </span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="w"> </span><span class="n">mainLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">mainLock</span><span class="p">;</span><span class="w">  </span>
+<span class="w">    </span><span class="n">mainLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span><span class="w">  </span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">checkShutdownAccess</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="n">advanceRunState</span><span class="p">(</span><span class="n">SHUTDOWN</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">interruptIdleWorkers</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="n">onShutdown</span><span class="p">();</span><span class="w"> </span><span class="c1">// hook for ScheduledThreadPoolExecutor  </span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">mainLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">    </span><span class="n">tryTerminate</span><span class="p">();</span><span class="w">  </span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="_8">线程池的拒绝策略</h2>
+<p><img alt="" src="../../image/Pasted%20image%2020251029195441.png" /></p>
+<h2 id="future">Future</h2>
+<p>JUC包中代表异步任务执行结果的接口。
+<img alt="" src="../../image/Pasted%20image%2020251029200801.png" /></p>
+<h2 id="futuretask">FutureTask</h2>
+<p><img alt="" src="../../image/Pasted%20image%2020251029203558.png" /><img alt="" src="../../image/Pasted%20image%2020251029204151.png" /></p>
+<h2 id="_9"></h2>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-link">
+        异步编程
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
+        java8 新特性
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java 基础/并发编程.md">Edit on zhengzp2019/note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

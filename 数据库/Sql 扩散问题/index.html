@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/%E6%95%B0%E6%8D%AE%E5%BA%93/Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Sql 扩散问题 - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Sql \u6269\u6563\u95ee\u9898", url: "#_top", children: [
+              {title: "1\u3001\u4ec0\u4e48\u662fLeft Join\u6269\u6563\u95ee\u9898", url: "#1left-join" },
+              {title: "2\u3001\u6269\u6563\u95ee\u9898\u7684\u5e38\u89c1\u573a\u666f", url: "#2" },
+              {title: "3\u3001\u6269\u6563\u95ee\u9898 vs Left Join vs Inner Join", url: "#3-vs-left-join-vs-inner-join" },
+              {title: "4\u3001\u89e3\u6cd5", url: "#4" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%9D%82%E8%B0%88/%E9%9A%8F%E5%BF%83%E8%AE%B0/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%9D%82%E8%B0%88/%E9%9A%8F%E5%BF%83%E8%AE%B0/" class="btn btn-xs btn-link">
+        随心记
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-link">
+        Mybatis collection使用
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="sql">Sql 扩散问题</h1>
+<h2 id="1left-join">1、什么是Left Join扩散问题</h2>
+<h2 id="2">2、扩散问题的常见场景</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1：N关联 + 聚合</td>
+<td>如：用户left join订单 -&gt; 一用户多订单，用户信息重复</td>
+</tr>
+<tr>
+<td>N：M（中间表）</td>
+<td>如：文章Left Join 标签关系表 -&gt; 一篇文章多个标签，文章内容重复</td>
+</tr>
+<tr>
+<td>多层Left Join级联</td>
+<td>A Left Join B (1:N) Left Join C(1:N) -&gt; 行数 = A x B x C</td>
+</tr>
+<tr>
+<td>用Left join代替子查询</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-vs-left-join-vs-inner-join">3、扩散问题 vs Left Join vs Inner Join</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Left Join 扩散</th>
+<th>Inner Join 扩散</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>行数变化</td>
+<td>左表行数 &lt;= 结果行数</td>
+<td>结果行数 = 匹配的笛卡尔积</td>
+</tr>
+<tr>
+<td>空置风险</td>
+<td>左表无匹配是补NULL</td>
+<td>无匹配则整行消失</td>
+</tr>
+<tr>
+<td>常见错误</td>
+<td>统计左表字段是重复计算</td>
+<td>误认为1:1，实际上1:N</td>
+</tr>
+<tr>
+<td>检查方法</td>
+<td><code>SELECT COUNT(*) FROM left_table</code> vs <code>SELECT COUNT(*) FROM join_result</code></td>
+<td>同左</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4">4、解法</h2>
+<p>先聚合右表，在join。</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">order_id</span><span class="p">,</span>
+<span class="w">    </span><span class="n">o</span><span class="p">.</span><span class="n">amount</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COALESCE</span><span class="p">(</span><span class="n">oi</span><span class="p">.</span><span class="n">item_count</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">item_count</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COALESCE</span><span class="p">(</span><span class="n">oi</span><span class="p">.</span><span class="n">total_quantity</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_quantity</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span>
+<span class="w">        </span><span class="n">order_id</span><span class="p">,</span>
+<span class="w">        </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">item_count</span><span class="p">,</span>
+<span class="w">        </span><span class="k">SUM</span><span class="p">(</span><span class="n">quantity</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_quantity</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">order_items</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">order_id</span>
+<span class="p">)</span><span class="w"> </span><span class="n">oi</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">order_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oi</span><span class="p">.</span><span class="n">order_id</span><span class="p">;</span>
+</code></pre></div>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%9D%82%E8%B0%88/%E9%9A%8F%E5%BF%83%E8%AE%B0/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%9D%82%E8%B0%88/%E9%9A%8F%E5%BF%83%E8%AE%B0/" class="btn btn-xs btn-link">
+        随心记
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-link">
+        Mybatis collection使用
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/数据库/Sql 扩散问题.md">Edit on zhengzp2019/note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

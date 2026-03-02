@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/%E6%95%B0%E6%8D%AE%E5%BA%93/Mybatis%20collection%E4%BD%BF%E7%94%A8/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Mybatis collection使用 - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Mybatis collection\u4f7f\u7528", url: "#_top", children: [
+              {title: "\u4f7f\u7528\u65b9\u5f0f", url: "#_1" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-link">
+        Sql 扩散问题
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%B7%A5%E5%85%B7/git/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%B7%A5%E5%85%B7/git/" class="btn btn-xs btn-link">
+        git
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="mybatis-collection">Mybatis collection使用</h1>
+<details class="info">
+<summary>Info</summary>
+<p>在执行sql查询时，希望将查询的一列整理成list，并映射到java 实体类的一个list属性中。</p>
+</details>
+<p><img alt="" src="../../image/Pasted%20image%2020251210184600.png" /></p>
+<h2 id="_1">使用方式</h2>
+<p>使用mybatis <code>&lt;resultMap&gt;#&lt;collection&gt;</code>标签。</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;resultMap</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;DataSourceBaseVOMap&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;com.jd.datacenter.console.model.datasource.viewobject.DataSourceInfoVO&quot;</span><span class="w">  </span>
+<span class="w">        </span><span class="na">extends=</span><span class="s">&quot;BaseResultMap&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;result</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;desc&quot;</span><span class="w"> </span><span class="na">jdbcType=</span><span class="s">&quot;VARCHAR&quot;</span><span class="w"> </span><span class="na">javaType=</span><span class="s">&quot;java.lang.String&quot;</span><span class="w">  </span>
+<span class="w">            </span><span class="na">property=</span><span class="s">&quot;desc&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="w">    </span><span class="nt">&lt;collection</span><span class="w"> </span><span class="na">property=</span><span class="s">&quot;usedStorageMedium&quot;</span><span class="w"> </span><span class="na">ofType=</span><span class="s">&quot;java.lang.Integer&quot;</span><span class="w"> </span><span class="na">javaType=</span><span class="s">&quot;java.util.List&quot;</span><span class="nt">&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;result</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;cluster_category&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="w">    </span><span class="nt">&lt;/collection&gt;</span><span class="w">  </span>
+<span class="nt">&lt;/resultMap&gt;</span>
+</code></pre></div>
+<p>部分查询sql如下：</p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="ss">&quot;query&quot;</span><span class="w"> </span><span class="n">parameterType</span><span class="o">=</span><span class="ss">&quot;com.jd.datacenter.console.model.datasource.requestobject.DataSourceBaseInfoQueryParam&quot;</span><span class="w">  </span><span class="n">resultMap</span><span class="o">=</span><span class="ss">&quot;DataSourceBaseVOMap&quot;</span><span class="o">&gt;</span><span class="w">  </span>
+<span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="n">t11</span><span class="p">.</span><span class="n">cluster_category</span><span class="p">,</span><span class="w">   </span>
+<span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">data_source_base_info</span><span class="w"> </span><span class="n">t1</span><span class="w">  </span>
+<span class="w">    </span><span class="k">inner</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="p">(</span><span class="w">  </span>
+<span class="w">        </span><span class="k">select</span><span class="w"> </span><span class="k">distinct</span><span class="w">  </span>
+<span class="w">            </span><span class="n">dsfi</span><span class="p">.</span><span class="n">data_source_id</span><span class="p">,</span><span class="w"> </span><span class="n">pci</span><span class="p">.</span><span class="n">cluster_category</span><span class="w">  </span>
+<span class="w">        </span><span class="k">from</span><span class="w"> </span><span class="n">data_source_field_info</span><span class="w"> </span><span class="n">dsfi</span><span class="w">  </span>
+<span class="w">        </span><span class="k">left</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">field_rel_data_block</span><span class="w"> </span><span class="n">frdb</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">dsfi</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frdb</span><span class="p">.</span><span class="n">field_id</span><span class="w">  </span>
+<span class="w">        </span><span class="k">left</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">data_block_info</span><span class="w"> </span><span class="n">dbi</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">frdb</span><span class="p">.</span><span class="n">data_block_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbi</span><span class="p">.</span><span class="n">id</span><span class="w">  </span>
+<span class="w">        </span><span class="k">left</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">data_block_rel_physical_cluster</span><span class="w"> </span><span class="n">dbrpc</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">dbi</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dbrpc</span><span class="p">.</span><span class="n">data_block_id</span><span class="w">  </span>
+<span class="w">        </span><span class="k">left</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">physical_cluster_info</span><span class="w"> </span><span class="n">pci</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">dbrpc</span><span class="p">.</span><span class="n">physical_cluster_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pci</span><span class="p">.</span><span class="n">id</span><span class="w">  </span>
+<span class="w">        </span><span class="o">&lt;</span><span class="k">where</span><span class="o">&gt;</span><span class="w">  </span>
+<span class="w">            </span><span class="o">&lt;</span><span class="k">if</span><span class="w"> </span><span class="n">test</span><span class="o">=</span><span class="ss">&quot;clusterCategorys != null and clusterCategorys.size() &gt; 0&quot;</span><span class="o">&gt;</span><span class="w">  </span>
+<span class="w">                </span><span class="n">dsfi</span><span class="p">.</span><span class="n">xbp_status_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">37</span><span class="w">  </span>
+<span class="w">                </span><span class="k">and</span><span class="w"> </span><span class="n">pci</span><span class="p">.</span><span class="n">cluster_category</span><span class="w"> </span><span class="k">in</span><span class="w">  </span>
+<span class="w">                </span><span class="o">&lt;</span><span class="n">foreach</span><span class="w"> </span><span class="n">collection</span><span class="o">=</span><span class="ss">&quot;clusterCategorys&quot;</span><span class="w"> </span><span class="n">item</span><span class="o">=</span><span class="ss">&quot;item&quot;</span><span class="w"> </span><span class="k">index</span><span class="o">=</span><span class="ss">&quot;index&quot;</span><span class="w"> </span><span class="k">open</span><span class="o">=</span><span class="ss">&quot;(&quot;</span><span class="w"> </span><span class="k">close</span><span class="o">=</span><span class="ss">&quot;)&quot;</span><span class="w"> </span><span class="n">separator</span><span class="o">=</span><span class="ss">&quot;,&quot;</span><span class="o">&gt;</span><span class="w">  </span>
+<span class="w">                    </span><span class="o">#</span><span class="err">{</span><span class="n">item</span><span class="err">}</span><span class="w">  </span>
+<span class="w">                </span><span class="o">&lt;/</span><span class="n">foreach</span><span class="o">&gt;</span><span class="w">  </span>
+<span class="w">            </span><span class="o">&lt;/</span><span class="k">if</span><span class="o">&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="o">&lt;/</span><span class="k">where</span><span class="o">&gt;</span><span class="w">  </span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="n">t11</span><span class="w">  </span>
+<span class="w">    </span><span class="k">on</span><span class="w"> </span><span class="n">t11</span><span class="p">.</span><span class="n">data_source_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="n">id</span>
+</code></pre></div>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-link">
+        Sql 扩散问题
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../%E5%B7%A5%E5%85%B7/git/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../%E5%B7%A5%E5%85%B7/git/" class="btn btn-xs btn-link">
+        git
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/数据库/Mybatis collection使用.md">Edit on zhengzp2019/note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

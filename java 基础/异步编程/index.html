@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/java%20%E5%9F%BA%E7%A1%80/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>异步编程 - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5f02\u6b65\u7f16\u7a0b", url: "#_top", children: [
+              {title: "CompletableFuture", url: "#completablefuture" },
+              {title: "\u5e38\u7528\u51fd\u6570", url: "#_2" },
+              {title: "\u591a\u4e2aCompletableFuture\u7ec4\u5408\u8fd0\u7b97", url: "#completablefuture_1" },
+              {title: "\u5f02\u6b65\u4efb\u52a1\u7684\u5f02\u5e38\u5904\u7406", url: "#_3" },
+              {title: "\u5b9e\u73b0", url: "#_4" },
+              {title: "java Stream \u4e0eCompletableFuture\u7ed3\u5408\u6848\u4f8b", url: "#java-stream-completablefuture" },
+              {title: "Spring\u4e2d\u7684\u5f02\u6b65\u7f16\u7a0b", url: "#spring" },
+              {title: "spring\u4e2d\u5e38\u89c1\u7684Executor", url: "#springexecutor" },
+              {title: "Spring\u4e2d\u6267\u884c\u5f02\u6b65\u4efb\u52a1\u7684\u4e24\u79cd\u65b9\u5f0f", url: "#spring_1" },
+              {title: "\u53cd\u5e94\u5f0f\u7f16\u7a0b", url: "#_5" },
+              {title: "Reactive Streams \u89c4\u8303", url: "#reactive-streams" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../%E6%B3%9B%E5%9E%8B/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../%E6%B3%9B%E5%9E%8B/" class="btn btn-xs btn-link">
+        泛型
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-link">
+        并发编程
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">异步编程</h1>
+<p>ExecutorService实现类的一种，使用工作窃取算法来提高性能，专门用来执行分治任务的线程池。线程池内部每个工作线程够关联自己的内存队列，正常情况下每个线程会从自己的内存队列中获取任务来执行，让本身队列没有任务时，当前线程会去其他线程关联的队列中获取任务来执行。</p>
+<p><code>CommonPool</code>（公共ForkJoinPool）是JVM自动创建的一个默认<code>ForkJoinPool</code>实例。</p>
+<h2 id="completablefuture">CompletableFuture</h2>
+<h2 id="_2">常用函数</h2>
+<ul>
+<li>static complete() 显示设置异步计算结果</li>
+<li>static runAsync() 实现无返回值的异步计算</li>
+<li>static supplyAsync() 实现有返回值的异步计算</li>
+<li>thenRun() 实现执行任务A，执行完成后，激活任务B。这种激活方式任务B拿不到A的结果，且回调事件无返回值。</li>
+<li>thenAccept() 实现异步任务A，执行完成后，激活任务B。这种激活方式，任务B能够拿到任务A的执行结果。但该方法仍然没有返回值。</li>
+<li>thenApply() 实现异步任务A，执行完成后，激活任务B。这种激活方式，任务B能够拿到任务A的执行结果，并且可以获取到任务B的响应值。</li>
+<li>thenComplete() 设置回调函数，当异步任务执行完成后进行回调，不会阻塞调用线程（不需要显示的创建线程池并将任务提交到线程池中。</li>
+</ul>
+<h2 id="completablefuture_1">多个CompletableFuture组合运算</h2>
+<ul>
+<li>基于thenCompose实现两个CompletableFuture任务串行执行。</li>
+<li>基于thenCombine事项两个并发任务执行结束后，使用二者的结果在作为参数实现一个异步任务。</li>
+<li>基于allOf等待多个并发运行的CompletableFuture所有任务执行完毕。调用get方法获取result时，会阻塞调用线程。</li>
+<li>基于anyOf等待多个并发运行的CompletableFuture中有一个任务执行完毕。调用get方法获取result时，会阻塞调用线程。</li>
+</ul>
+<h2 id="_3">异步任务的异常处理</h2>
+<ul>
+<li>使用CompletableFuture.completeExceptionally 手动设置异步任务异常。</li>
+<li>使用CompletableFuture.exceptionally(t -&gt; "default").get() 当异步任务出现异常时，使用默认值处理。</li>
+</ul>
+<h2 id="_4">实现</h2>
+<p><img alt="" src="../../image/Pasted%20image%2020251101180036.png" /></p>
+<p>源码阅读：
+<div class="highlight"><pre><span></span><code><span class="o">-</span><span class="w"> </span><span class="n">runAsync</span><span class="p">(</span><span class="n">Runnable</span><span class="w"> </span><span class="n">runnable</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">supplyAsync</span><span class="p">(</span><span class="n">Supplier</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span><span class="w"> </span><span class="n">supplier</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">supplyAsync</span><span class="p">(</span><span class="n">Supplier</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span><span class="w"> </span><span class="n">supplier</span><span class="p">,</span><span class="w"> </span><span class="n">Executor</span><span class="w"> </span><span class="n">executor</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="java-stream-completablefuture">java Stream 与CompletableFuture结合案例</h2>
+<p>串行rpc调用</p>
+<div class="highlight"><pre><span></span><code><span class="cm">/**  </span>
+<span class="cm"> * @author zhengzhanpeng.1029  </span>
+<span class="cm"> * @date 2025/10/28 00:34  </span>
+<span class="cm"> */</span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MyExecutorPool</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">rpcCall</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">ip</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="c1">// System.out.println(ip + &quot;rpcCall:&quot; + param);  </span>
+
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">            </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">            </span><span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="p">}</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">param</span><span class="p">;</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">  </span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">serial</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ipList</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="c1">// 2. 发起广播调用  </span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ipList</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">            </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">rpcCall</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span><span class="w"> </span><span class="n">ip</span><span class="p">));</span><span class="w">  </span>
+<span class="w">        </span><span class="p">}</span><span class="w">        </span><span class="c1">// 3. 输出  </span>
+<span class="w">        </span><span class="c1">// result.forEach(System.out::println);  </span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;serial cost:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">));</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">  </span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">parallel</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ipList</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">futures</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ipList</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span><span class="w">  </span>
+<span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">ip</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="p">.</span><span class="na">supplyAsync</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">rpcCall</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span><span class="w"> </span><span class="n">ip</span><span class="p">))).</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span><span class="w">  </span>
+
+<span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">futures</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">map</span><span class="p">(</span><span class="n">CompletableFuture</span><span class="p">::</span><span class="n">join</span><span class="p">).</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span><span class="w">  </span>
+<span class="w">        </span><span class="c1">// 3. 输出结果  </span>
+<span class="w">        </span><span class="c1">// results.forEach(System.out::println);  </span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;parallel cost:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">));</span><span class="w">  </span>
+
+<span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="c1">// 1. 生成ip列表  </span>
+<span class="w">        </span><span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ipList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">            </span><span class="n">ipList</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">&quot;192.168.0.&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="p">}</span><span class="w">  </span>
+<span class="w">        </span><span class="n">serial</span><span class="p">(</span><span class="n">ipList</span><span class="p">);</span><span class="w">  </span>
+<span class="w">        </span><span class="n">parallel</span><span class="p">(</span><span class="n">ipList</span><span class="p">);</span><span class="w">  </span>
+<span class="p">}</span>
+</code></pre></div>
+<p><img alt="" src="../../image/Pasted%20image%2020251103212129.png" /></p>
+<h2 id="spring">Spring中的异步编程</h2>
+<p>spring中分别使用TaskExecutor和TaskSchedule实现异步执行和任务调度的抽象。</p>
+<h2 id="springexecutor">spring中常见的Executor</h2>
+<ul>
+<li>SimplyAsycTaskExecutor</li>
+<li>SyncTaskExecutor</li>
+<li>ConcurrentTaskExecutor</li>
+<li>SimplyThreadPoolTaskExecutor</li>
+<li>⭐️ThreadPoolTaskExecutor</li>
+<li>TimerTaskExecutor</li>
+</ul>
+<h2 id="spring_1">Spring中执行异步任务的两种方式</h2>
+<h3 id="1xml">1、使用XML方式执行</h3>
+<p>第一步：注入一个<code>ThreadPoolTaskExecutor</code>处理器
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;taskExecutor&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor&quot;</span><span class="nt">&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;corePoolSize&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;maxPoolSize&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;10&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;keepAliveSeconds&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;60&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="cm">&lt;!--        缓存队列大小--&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;queueCapacity&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;20&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;threadNamePrefix&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;taskExecutor-&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;rejectedExecutionHandler&quot;</span><span class="nt">&gt;</span><span class="w">  </span>
+<span class="w">            </span><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="w">        </span><span class="nt">&lt;/property&gt;</span>
+<span class="w">        </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;waitForTasksToCompleteOnShutdown&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/bean&gt;</span>
+</code></pre></div></p>
+<p>第二步：在spring bean中使用该执行器
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;dynamicThreadPoolManager&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;com.jd.datacenter.console.service.config.DynamicThreadPoolManager&quot;</span><span class="nt">&gt;</span><span class="w">  </span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;taskExecutor&quot;</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;taskExecutor&quot;</span><span class="nt">/&gt;</span><span class="w">  </span>
+<span class="nt">&lt;/bean&gt;</span>
+</code></pre></div></p>
+<p>第三步：定义spring bean并通过setter注入执行器属性
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DynamicThreadPoolManager</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">TaskExecutor</span><span class="w"> </span><span class="n">taskExecutor</span><span class="p">;</span><span class="w">  </span>
+
+<span class="w">    </span><span class="cm">/**  </span>
+<span class="cm">     * 构造函数.  </span>
+<span class="cm">     */</span><span class="w">    </span>
+<span class="w">     </span><span class="kd">public</span><span class="w"> </span><span class="nf">DynamicThreadPoolManager</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ThreadPoolTaskExecutor</span><span class="p">();</span><span class="w">  </span>
+<span class="w">        </span><span class="n">initExecutor</span><span class="p">(</span><span class="n">defaultConfig</span><span class="p">());</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span><span class="w">  </span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setTaskExecutor</span><span class="p">(</span><span class="n">ThreadPoolTaskExecutor</span><span class="w"> </span><span class="n">taskExecutor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">taskExecutor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">taskExecutor</span><span class="p">;</span><span class="w">  </span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">taskExecutor</span><span class="w"> </span><span class="n">isinstanceof</span><span class="w"> </span><span class="n">ThreadPoolTaskExecutor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="p">((</span><span class="n">ThreadPoolTaskExecutor</span><span class="p">)</span><span class="w"> </span><span class="n">taskExecutor</span><span class="p">).</span><span class="na">shutdown</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>第四步：使用</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>1、ThreadPoolTaskExecutor中的线程都是用户线程非Deamon线程，而JVM退出条件是进程中不包含任意的用户线程。因此若要JVM退出，需要显示关闭线程池。
+2、默认情况下ThreadPoolTaskExecutor中的变量waitForTasksToCompleteOnShutdown为false，需显示设置为true</p>
+</div>
+<h3 id="2-async">2、使用注解方式执行 @Async</h3>
+<p>第一步：开启异步处理
+- 基于bean配置
+- 在启动类上使用注解<code>@EnableAsync</code></p>
+<p><div class="highlight"><pre><span></span><code><span class="cm">&lt;!--    1、开启Async注解解析--&gt;</span><span class="w">  </span>
+<span class="w">    </span><span class="nt">&lt;task:annotation-driven</span><span class="w"> </span><span class="nt">/&gt;</span><span class="w">  </span>
+
+<span class="cm">&lt;!--    2、注入业务Bean--&gt;</span><span class="w">  </span>
+<span class="nt">&lt;bean</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;dynamicThreadPoolManager&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;com.jd.datacenter.console.service.config.DynamicThreadPoolManager&quot;</span><span class="nt">/&gt;</span>
+</code></pre></div>
+未指定异步任务执行线程时，默认使用<code>SimpleAsyncTaskExecutor</code></p>
+<p>第二步：指定执行任务的线程 <code>@Async("myExecutor")</code></p>
+<p>第三步：获取异步任务的结果
+可以使用<code>CompletableFuture&lt;?&gt;</code>获取异步任务的结果。</p>
+<p>第四步：处理异步任务异常
+使用<code>AsyncUncaughtExceptionHandler#handleUncaughtException</code>处理异常，并在xml中配置。
+<img alt="" src="../../image/Pasted%20image%2020251104111500.png" /></p>
+<h2 id="_5">反应式编程</h2>
+<p>状态会随着中间过程的变化而变化。
+- 即时响应性
+- 回弹性（类似于熔断）
+- 弹性（类似于动态线程池）
+- 消息驱动（类似于消息队列）</p>
+<p><img alt="" src="../../image/Pasted%20image%2020251104210623.png" /></p>
+<p>反应式编程旨在解决JVM上“经典”异步编程的缺点，同时关注一些其他方面：
+- 代码的可组合性和可读性
+- 数据作为一个用丰富的运算符词汇表操作的流程
+- 在订阅之前没有发生任何事情
+- 回压或消费者向生产者发出信号表明发射元素过快的能力
+- 高级但高价的抽象，与并发无关</p>
+<div class="admonition info">
+<p class="admonition-title">CallBack Hell</p>
+<p>对于负责的异步任务处理，需要回调执行回调，形成多层嵌套，使代码很难回归，并推理业务逻辑。</p>
+</div>
+<h2 id="reactive-streams">Reactive Streams 规范</h2>
+<div class="admonition info">
+<p class="admonition-title">背压</p>
+<p>依据消费者的消费能力，来控制生产者生产消息的速率。</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>作用</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Publisher&lt;T&gt;</code></td>
+<td>发布者：生产数据</td>
+<td>水龙头</td>
+</tr>
+<tr>
+<td><code>Subscriber&lt;T&gt;</code></td>
+<td>订阅者：消费数据</td>
+<td>水桶</td>
+</tr>
+<tr>
+<td><code>Subscription</code></td>
+<td>订阅关系：控制流量（背压）</td>
+<td>水管阀门</td>
+</tr>
+<tr>
+<td><code>Processor&lt;T, R&gt;</code></td>
+<td>处理器：即时发布者，也是订阅者</td>
+<td>过滤器、增压泵</td>
+</tr>
+</tbody>
+</table>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../%E6%B3%9B%E5%9E%8B/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../%E6%B3%9B%E5%9E%8B/" class="btn btn-xs btn-link">
+        泛型
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="btn btn-xs btn-link">
+        并发编程
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java 基础/异步编程.md">Edit on zhengzp2019/note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

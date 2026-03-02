@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/java%20%E6%A1%86%E6%9E%B6/nginx/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>nginx - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "nginx", url: "#_top", children: [
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-link">
+        测试
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../mybatis/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../mybatis/" class="btn btn-xs btn-link">
+        mybatis
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="nginx">nginx</h1>
+<div class="highlight"><pre><span></span><code><span class="c1">## 查看nginx是否启动</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nginx<span class="w"> </span>
+<span class="c1">## 查看客户端请求历史</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/access.log
+<span class="c1">## 查看nginx错误日志</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log
+<span class="c1">## 查看 nginx 代理转发配置文件</span>
+vim<span class="w"> </span>/etc/nginx/sites-available/default
+<span class="c1">## 校验转发配置的合法性</span>
+nginx<span class="w"> </span>-t
+<span class="c1">## 配置热加载</span>
+nginx<span class="w"> </span>-s<span class="w"> </span>reload
+</code></pre></div>
+<p>代理配置示例
+<div class="highlight"><pre><span></span><code><span class="err">server</span><span class="p">{</span>
+<span class="w">        </span><span class="err">lis</span><span class="kc">ten</span><span class="w"> </span><span class="mi">80</span><span class="err">;</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">监听端口</span>
+<span class="w">        </span><span class="err">server_</span><span class="kc">na</span><span class="err">me</span><span class="w"> </span><span class="err">dpbirder.dev.jd.local;</span>
+<span class="w">        </span><span class="err">loca</span><span class="kc">t</span><span class="err">io</span><span class="kc">n</span><span class="w"> </span><span class="err">/</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">匹配路径</span>
+<span class="w">                </span><span class="err">proxy_pass</span><span class="w"> </span><span class="err">h</span><span class="kc">tt</span><span class="err">p</span><span class="p">:</span><span class="c1">//127.0.0.1:1601/datacenter/api$uri; # 代理转发路径</span>
+<span class="w">                </span><span class="err">proxy_se</span><span class="kc">t</span><span class="err">_header</span><span class="w"> </span><span class="err">Hos</span><span class="kc">t</span><span class="w"> </span><span class="err">$hos</span><span class="kc">t</span><span class="err">;</span>
+<span class="w">                </span><span class="err">proxy_se</span><span class="kc">t</span><span class="err">_header</span><span class="w"> </span><span class="err">X_Real</span><span class="mi">-</span><span class="err">IP</span><span class="w"> </span><span class="err">$remo</span><span class="kc">te</span><span class="err">_addr;</span>
+<span class="w">                </span><span class="err">proxy_se</span><span class="kc">t</span><span class="err">_header</span><span class="w"> </span><span class="err">X</span><span class="mi">-</span><span class="err">Forwarded</span><span class="mi">-</span><span class="err">For</span><span class="w"> </span><span class="err">$proxy_add_x_</span><span class="kc">f</span><span class="err">orwarded_</span><span class="kc">f</span><span class="err">or;</span>
+<span class="w">                </span><span class="err">proxy_se</span><span class="kc">t</span><span class="err">_header</span><span class="w"> </span><span class="err">X</span><span class="mi">-</span><span class="err">Forwarded</span><span class="mi">-</span><span class="err">Pro</span><span class="kc">t</span><span class="err">o</span><span class="w"> </span><span class="err">$scheme;</span>
+<span class="w">                </span><span class="err">proxy_co</span><span class="kc">nne</span><span class="err">c</span><span class="kc">t</span><span class="err">_</span><span class="kc">t</span><span class="err">imeou</span><span class="kc">t</span><span class="w"> </span><span class="mi">10</span><span class="err">s;</span>
+<span class="w">                </span><span class="err">proxy_se</span><span class="kc">n</span><span class="err">d_</span><span class="kc">t</span><span class="err">imeou</span><span class="kc">t</span><span class="w"> </span><span class="mi">10</span><span class="err">s;</span>
+<span class="w">                </span><span class="err">proxy_read_</span><span class="kc">t</span><span class="err">imeou</span><span class="kc">t</span><span class="w"> </span><span class="mi">10</span><span class="err">s;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-link">
+        测试
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../mybatis/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../mybatis/" class="btn btn-xs btn-link">
+        mybatis
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java 框架/nginx.md">Edit on zhengzp2019/note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

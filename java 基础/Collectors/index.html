@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/java%20%E5%9F%BA%E7%A1%80/Collectors/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Collectors - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Collectors", url: "#_top", children: [
+              {title: "\u5e38\u89c1\u7684 Collectors\u9759\u6001\u65b9\u6cd5", url: "#collectors_1" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
+        java8 新特性
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-link">
+        基本概念
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="collectors">Collectors</h1>
+<p>## 介绍
+一般用于流处理中的最后一步。Stream.collect() 是java 8 stream api中的终止方法。它实现对流实例中保存的数据元素执行可变的折叠操作。此操作的策略由Collector接口实现提供。</p>
+<h2 id="collectors_1">常见的 Collectors静态方法</h2>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>toList()</td>
+<td>将 stream 中的元素收集到 list 实例。该方法不能作用于 List 的实现类。</td>
+</tr>
+<tr>
+<td>toSet()</td>
+<td>将 stream 中的元素收集到 set 实例。同上。</td>
+</tr>
+<tr>
+<td>toMap()</td>
+<td>将 stream 中的元素收集到 map 实例。同上。</td>
+</tr>
+<tr>
+<td>mapping()</td>
+<td>把流中的元素映射为另一个类型，然后用下游收集器收集。</td>
+</tr>
+</tbody>
+</table>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
+        java8 新特性
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-link">
+        基本概念
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java 基础/Collectors.md">Edit on zhengzp2019/note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>
