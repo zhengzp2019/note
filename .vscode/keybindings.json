@@ -1,0 +1,16 @@
+[
+  {
+    "key": "ctrl+alt+t",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && editorLangId == markdown",
+    "args": {
+      "snippet": "| 列1 | 列2 | 列3 |\\n| --- | --- | --- |\\n| 值1 | 值2 | 值3 |"
+    }
+  },
+  {
+    "key": "ctrl+alt+shift+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Format Markdown Tables (Current File)",
+    "when": "editorTextFocus && editorLangId == markdown"
+  }
+]

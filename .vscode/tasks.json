@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MkDocs Serve (windmill)",
+      "type": "shell",
+      "command": "mkdocs serve -f mkdocs.yml",
+      "problemMatcher": []
+    },
+    {
+      "label": "MkDocs Build",
+      "type": "shell",
+      "command": "mkdocs build -f mkdocs.yml",
+      "problemMatcher": []
+    }
+  ]
+}

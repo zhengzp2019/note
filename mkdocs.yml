@@ -1,0 +1,23 @@
+site_name: mydocs
+site_url: https://example.com/
+repo_name: mydocs
+docs_dir: docs
+
+theme:
+  name: windmill
+
+extra_css:
+  - styles/admonition-fix.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - meta
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.mark
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables

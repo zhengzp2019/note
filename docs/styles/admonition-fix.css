@@ -1,0 +1,101 @@
+/* Obsidian-like typed callout styles for both !!! and ??? */
+.rst-content .admonition,
+.rst-content details {
+  margin: 1rem 0;
+  border: 1px solid #d9e2ef;
+  border-left: 0.3rem solid #6b7280;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+.rst-content .admonition-title,
+.rst-content details > summary {
+  font-weight: 700;
+  padding: 0.55rem 0.8rem;
+}
+
+.rst-content details > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.rst-content details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.rst-content details > summary::before {
+  content: '▸';
+  margin-right: 0.45rem;
+}
+
+.rst-content details[open] > summary::before {
+  content: '▾';
+}
+
+.rst-content details > *:not(summary) {
+  padding: 0 0.8rem 0.8rem;
+}
+
+.rst-content .admonition.note,
+.rst-content details.note {
+  border-left-color: #7c3aed;
+  background: #f7f3ff;
+}
+
+.rst-content .admonition.note .admonition-title,
+.rst-content details.note > summary {
+  background: #ede4ff;
+  color: #4c1d95;
+}
+
+.rst-content .admonition.info,
+.rst-content details.info {
+  border-left-color: #0284c7;
+  background: #f0f9ff;
+}
+
+.rst-content .admonition.info .admonition-title,
+.rst-content details.info > summary {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.rst-content .admonition.tip,
+.rst-content details.tip {
+  border-left-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.rst-content .admonition.tip .admonition-title,
+.rst-content details.tip > summary {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.rst-content .admonition.warning,
+.rst-content details.warning {
+  border-left-color: #d97706;
+  background: #fffbeb;
+}
+
+.rst-content .admonition.warning .admonition-title,
+.rst-content details.warning > summary {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.rst-content .admonition.danger,
+.rst-content .admonition.error,
+.rst-content details.danger,
+.rst-content details.error {
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+
+.rst-content .admonition.danger .admonition-title,
+.rst-content .admonition.error .admonition-title,
+.rst-content details.danger > summary,
+.rst-content details.error > summary {
+  background: #fee2e2;
+  color: #991b1b;
+}
