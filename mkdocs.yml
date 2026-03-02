@@ -8,7 +8,7 @@ theme:
   name: windmill
 
 extra_css:
-  - styles/admonition-fix.css
+  - ../resources/styles/admonition-fix.css
 
 markdown_extensions:
   - admonition

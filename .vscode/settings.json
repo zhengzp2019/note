@@ -17,7 +17,7 @@
     "source.fixAll.markdownlint": "always"
   },
   "markdown.copyFiles.destination": {
-    "**/*.md": "image/${documentBaseName}/"
+    "**/*.md": "../../resources/image/"
   },
   "markdown.updateLinksOnFileMove.enabled": "always",
   "markdown.validate.fileLinks.enabled": true,
