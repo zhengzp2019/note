@@ -39,3 +39,9 @@ Thumbs.db
 # Local environment variables
 .env
 .env.*
+
+# Node.js local artifacts (for markdown tooling only)
+node_modules/
+package-lock.json
+npm-debug.log*
+.npm/

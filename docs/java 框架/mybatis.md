@@ -9,17 +9,20 @@
 > 使用 PageHelper 插件
 
 **核心类和接口**
+
 - Dialect
 - PageHelper
 - PageInfo：取出分页结果
 
 **关键方法**
+
 - PageHelper.startPage：开启分页查询，该方法后的第一个 Mybatis 查询方法会被进行分页
 - PageHelper.offsetPage：
 
 **使用步骤**
 
 1、引入 pom 依赖
+
 ```xml
 <!-- PageHelper 分页插件 -->
 <dependency>
@@ -30,11 +33,12 @@
 ```
 
 2、定义Mapper 接口 和 sql
- ```java
+
+```java
 @Mapper
 public interface UserMapper {
 
-    List<User> selectAll();
+   List<User> selectAll();
 }
 ```
 
@@ -90,5 +94,7 @@ public class UserController {
     }
 }
 ```
+
 ## 参考
+
 - https://pagehelper.github.io/docs/howtouse/

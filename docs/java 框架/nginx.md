@@ -2,7 +2,7 @@
 
 ```bash
 ## 查看nginx是否启动
-ps aux | grep nginx 
+ps aux | grep nginx
 ## 查看客户端请求历史
 tail -f /var/log/nginx/access.log
 ## 查看nginx错误日志
@@ -15,8 +15,8 @@ nginx -t
 nginx -s reload
 ```
 
-
 代理配置示例
+
 ```json
 server{
         listen 80; # 监听端口

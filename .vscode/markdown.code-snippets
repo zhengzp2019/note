@@ -1,0 +1,48 @@
+{
+  "Markdown H1": { "prefix": "h1", "body": ["# ${1:Heading 1}"], "description": "Insert H1 heading" },
+  "Markdown H2": { "prefix": "h2", "body": ["## ${1:Heading 2}"], "description": "Insert H2 heading" },
+  "Markdown H3": { "prefix": "h3", "body": ["### ${1:Heading 3}"], "description": "Insert H3 heading" },
+  "Markdown H4": { "prefix": "h4", "body": ["#### ${1:Heading 4}"], "description": "Insert H4 heading" },
+  "Markdown H5": { "prefix": "h5", "body": ["##### ${1:Heading 5}"], "description": "Insert H5 heading" },
+  "Markdown H6": { "prefix": "h6", "body": ["###### ${1:Heading 6}"], "description": "Insert H6 heading" },
+  "Markdown Code Fence": {
+    "prefix": "code",
+    "body": ["```$1", "$0", "```"],
+    "description": "Insert fenced code block"
+  },
+  "Markdown Inline Code": {
+    "prefix": "icode",
+    "body": ["`$1`"],
+    "description": "Insert inline code"
+  },
+  "Markdown Table 3 Columns": {
+    "prefix": "table",
+    "body": [
+      "| ${1:Column 1} | ${2:Column 2} | ${3:Column 3} |",
+      "| --- | --- | --- |",
+      "| ${4:Value 1} | ${5:Value 2} | ${6:Value 3} |",
+      "| ${7:Value 4} | ${8:Value 5} | ${9:Value 6} |"
+    ],
+    "description": "Insert a 3-column markdown table"
+  },
+  "Markdown Link": {
+    "prefix": "link",
+    "body": ["[${1:text}](${2:https://example.com})"],
+    "description": "Insert markdown link"
+  },
+  "Markdown Bold": {
+    "prefix": "bold",
+    "body": ["**${1:text}**"],
+    "description": "Insert bold text"
+  },
+  "Markdown Highlight": {
+    "prefix": "mark",
+    "body": ["==${1:highlight text}=="],
+    "description": "Insert highlighted text (if renderer supports ==mark==)"
+  },
+  "Markdown Image": {
+    "prefix": "img",
+    "body": ["![${1:alt text}](${2:./images/example.png})"],
+    "description": "Insert markdown image"
+  }
+}

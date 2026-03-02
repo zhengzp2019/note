@@ -12,5 +12,35 @@
     "command": "workbench.action.tasks.runTask",
     "args": "Format Markdown Tables (Current File)",
     "when": "editorTextFocus && editorLangId == markdown"
+  },
+  {
+    "key": "alt+shift+up",
+    "command": "markdown.extension.editing.toggleHeadingUp",
+    "when": "editorTextFocus && editorLangId == markdown"
+  },
+  {
+    "key": "alt+shift+down",
+    "command": "markdown.extension.editing.toggleHeadingDown",
+    "when": "editorTextFocus && editorLangId == markdown"
+  },
+  {
+    "key": "alt+shift+right",
+    "command": "editor.action.indentLines",
+    "when": "editorTextFocus && editorLangId == markdown"
+  },
+  {
+    "key": "alt+shift+left",
+    "command": "editor.action.outdentLines",
+    "when": "editorTextFocus && editorLangId == markdown"
+  },
+  {
+    "key": "ctrl+alt+[",
+    "command": "editor.fold",
+    "when": "editorTextFocus && editorLangId == markdown"
+  },
+  {
+    "key": "ctrl+alt+]",
+    "command": "editor.unfold",
+    "when": "editorTextFocus && editorLangId == markdown"
   }
 ]

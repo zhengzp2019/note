@@ -1,0 +1,17 @@
+{
+  "prettier.configPath": ".vscode/.prettierrc",
+  "markdownlint.configFile": ".vscode/.markdownlint.json",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.markdownlint": "always"
+  },
+  "markdown.copyFiles.destination": {
+    "**/*.md": "image/${documentBaseName}/"
+  },
+  "markdown.updateLinksOnFileMove.enabled": "always",
+  "markdown.validate.fileLinks.enabled": true,
+  "markdown.preferredMdPathExtension": ".md"
+}

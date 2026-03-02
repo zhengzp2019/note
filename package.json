@@ -1,0 +1,12 @@
+{
+  "name": "mydocs",
+  "private": true,
+  "scripts": {
+    "lint:md": "markdownlint \"**/*.md\" --config .vscode/.markdownlint.json --ignore node_modules --ignore site",
+    "format:md": "prettier --write \"**/*.md\" --config .vscode/.prettierrc"
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.45.0",
+    "prettier": "^3.6.2"
+  }
+}

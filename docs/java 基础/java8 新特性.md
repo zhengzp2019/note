@@ -16,7 +16,7 @@ List<String> strings = Arrays.asList("1", "2", "3");
 List<Integer> numbers = strings.stream()
     .map(Integer::parseInt)
     .collect(Collectors.toList());
-    
+
 // 3. 排序
 List<String> list = Arrays.asList("banana", "apple", "cherry");
 

@@ -7,6 +7,7 @@ apt
 yum
 
 ```
+
 ## ssh
 
 ```shell
