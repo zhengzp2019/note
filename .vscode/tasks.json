@@ -12,6 +12,12 @@
       "type": "shell",
       "command": "mkdocs build -f mkdocs.yml",
       "problemMatcher": []
+    },
+    {
+      "label": "MkDocs Deploy (Gitee Pages)",
+      "type": "shell",
+      "command": "mkdocs gh-deploy -f mkdocs.yml -r origin -b gitee-pages --force",
+      "problemMatcher": []
     }
   ]
 }
