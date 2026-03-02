@@ -1,9 +1,17 @@
 {
   "prettier.configPath": ".vscode/.prettierrc",
   "markdownlint.configFile": ".vscode/.markdownlint.json",
+  "editor.snippetSuggestions": "top",
+  "editor.suggest.showSnippets": true,
+  "editor.tabCompletion": "on",
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "other": "on",
+      "comments": "on",
+      "strings": "on"
+    }
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.markdownlint": "always"

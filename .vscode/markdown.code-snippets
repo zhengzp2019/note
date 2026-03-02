@@ -44,5 +44,32 @@
     "prefix": "img",
     "body": ["![${1:alt text}](${2:./images/example.png})"],
     "description": "Insert markdown image"
+  },
+  "Markdown Todo List": {
+    "prefix": "todo",
+    "body": [
+      "- [ ] ${1:Task 1}",
+      "- [ ] ${2:Task 2}",
+      "- [x] ${3:Done Task}"
+    ],
+    "description": "Insert markdown todo checklist"
+  },
+  "Markdown Unordered List": {
+    "prefix": "ul",
+    "body": [
+      "- ${1:Item 1}",
+      "- ${2:Item 2}",
+      "- ${3:Item 3}"
+    ],
+    "description": "Insert markdown unordered list"
+  },
+  "Markdown Ordered List": {
+    "prefix": "ol",
+    "body": [
+      "1. ${1:Item 1}",
+      "2. ${2:Item 2}",
+      "3. ${3:Item 3}"
+    ],
+    "description": "Insert markdown ordered list"
   }
 }
