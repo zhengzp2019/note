@@ -14,9 +14,9 @@
       "problemMatcher": []
     },
     {
-      "label": "MkDocs Deploy (Gitee Pages)",
+      "label": "MkDocs Deploy (GitHub Pages)",
       "type": "shell",
-      "command": "mkdocs gh-deploy -f mkdocs.yml -r origin -b gitee-pages --force",
+      "command": "mkdocs gh-deploy -f mkdocs.yml -r origin -b gh-pages --force",
       "problemMatcher": []
     }
   ]

@@ -1,6 +1,7 @@
 site_name: mydocs
-site_url: https://example.com/
-repo_name: mydocs
+site_url: https://zhengzp2019.github.io/note/
+repo_url: https://github.com/zhengzp2019/note
+repo_name: note
 docs_dir: docs
 
 theme:
