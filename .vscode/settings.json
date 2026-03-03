@@ -17,7 +17,8 @@
     }
   },
   "markdown.copyFiles.destination": {
-    "**/*.md": "../../resources/image/"
+    "docs/*.md": "resources/image/",
+    "docs/**/*.md": "../resources/image/"
   },
   "markdown.updateLinksOnFileMove.enabled": "always",
   "markdown.validate.fileLinks.enabled": true,
