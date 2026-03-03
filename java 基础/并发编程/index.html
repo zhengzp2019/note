@@ -16,7 +16,7 @@
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/highlight.css">
-    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -43,7 +43,6 @@
               {title: "\u7ebf\u7a0b\u6c60\u7684\u62d2\u7edd\u7b56\u7565", url: "#_8" },
               {title: "Future", url: "#future" },
               {title: "FutureTask", url: "#futuretask" },
-              {title: "", url: "#_9" },
           ]},
         ];
 
@@ -100,44 +99,44 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <h2 id="_4">线程池</h2>
 <h2 id="_5">线程池的相关参数</h2>
 <h2 id="_6">线程池的几种状态</h2>
-<p><img alt="" src="../../image/Pasted%20image%2020251028094255.png" /></p>
+<p><img alt="image" src="../../resources/image/img-20251028094255.png" /></p>
 <h2 id="_7">关闭线程的两种方式</h2>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">shutdownNow</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
-<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tasks</span><span class="p">;</span><span class="w">  </span>
-<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="w"> </span><span class="n">mainLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">mainLock</span><span class="p">;</span><span class="w">  </span>
-<span class="w">    </span><span class="n">mainLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span><span class="w">  </span>
-<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
-<span class="w">        </span><span class="n">checkShutdownAccess</span><span class="p">();</span><span class="w">  </span>
-<span class="w">        </span><span class="n">advanceRunState</span><span class="p">(</span><span class="n">STOP</span><span class="p">);</span><span class="w">  </span>
-<span class="w">        </span><span class="n">interruptWorkers</span><span class="p">();</span><span class="w">  </span>
-<span class="w">        </span><span class="n">tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drainQueue</span><span class="p">();</span><span class="w">  </span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
-<span class="w">        </span><span class="n">mainLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w">  </span>
-<span class="w">    </span><span class="p">}</span><span class="w">    </span><span class="n">tryTerminate</span><span class="p">();</span><span class="w">  </span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">tasks</span><span class="p">;</span><span class="w">  </span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">shutdownNow</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tasks</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="w"> </span><span class="n">mainLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">mainLock</span><span class="p">;</span>
+<span class="w">    </span><span class="n">mainLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">checkShutdownAccess</span><span class="p">();</span>
+<span class="w">        </span><span class="n">advanceRunState</span><span class="p">(</span><span class="n">STOP</span><span class="p">);</span>
+<span class="w">        </span><span class="n">interruptWorkers</span><span class="p">();</span>
+<span class="w">        </span><span class="n">tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drainQueue</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">mainLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w">    </span><span class="n">tryTerminate</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">tasks</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
-<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="w"> </span><span class="n">mainLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">mainLock</span><span class="p">;</span><span class="w">  </span>
-<span class="w">    </span><span class="n">mainLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span><span class="w">  </span>
-<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
-<span class="w">        </span><span class="n">checkShutdownAccess</span><span class="p">();</span><span class="w">  </span>
-<span class="w">        </span><span class="n">advanceRunState</span><span class="p">(</span><span class="n">SHUTDOWN</span><span class="p">);</span><span class="w">  </span>
-<span class="w">        </span><span class="n">interruptIdleWorkers</span><span class="p">();</span><span class="w">  </span>
-<span class="w">        </span><span class="n">onShutdown</span><span class="p">();</span><span class="w"> </span><span class="c1">// hook for ScheduledThreadPoolExecutor  </span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
-<span class="w">        </span><span class="n">mainLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w">  </span>
-<span class="w">    </span><span class="p">}</span><span class="w">    </span><span class="n">tryTerminate</span><span class="p">();</span><span class="w">  </span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="w"> </span><span class="n">mainLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">mainLock</span><span class="p">;</span>
+<span class="w">    </span><span class="n">mainLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">checkShutdownAccess</span><span class="p">();</span>
+<span class="w">        </span><span class="n">advanceRunState</span><span class="p">(</span><span class="n">SHUTDOWN</span><span class="p">);</span>
+<span class="w">        </span><span class="n">interruptIdleWorkers</span><span class="p">();</span>
+<span class="w">        </span><span class="n">onShutdown</span><span class="p">();</span><span class="w"> </span><span class="c1">// hook for ScheduledThreadPoolExecutor</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">mainLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w">    </span><span class="n">tryTerminate</span><span class="p">();</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="_8">线程池的拒绝策略</h2>
-<p><img alt="" src="../../image/Pasted%20image%2020251029195441.png" /></p>
+<p><img alt="image" src="../../resources/image/img-20251029195441.png" /></p>
 <h2 id="future">Future</h2>
 <p>JUC包中代表异步任务执行结果的接口。
-<img alt="" src="../../image/Pasted%20image%2020251029200801.png" /></p>
+<img alt="image" src="../../resources/image/img-20251029200801.png" /></p>
 <h2 id="futuretask">FutureTask</h2>
-<p><img alt="" src="../../image/Pasted%20image%2020251029203558.png" /><img alt="" src="../../image/Pasted%20image%2020251029204151.png" /></p>
-<h2 id="_9"></h2>
+<p><img alt="image" src="../../resources/image/img-20251029203558.png" />
+<img alt="image" src="../../resources/image/img-20251029204151.png" /></p>
 
   <br>
     

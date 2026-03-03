@@ -16,7 +16,7 @@
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/highlight.css">
-    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -34,6 +34,7 @@
         
         var pageToc = [
           {title: "Collectors", url: "#_top", children: [
+              {title: "\u4ecb\u7ecd", url: "#_1" },
               {title: "\u5e38\u89c1\u7684 Collectors\u9759\u6001\u65b9\u6cd5", url: "#collectors_1" },
           ]},
         ];
@@ -83,8 +84,8 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
     
 
     <h1 id="collectors">Collectors</h1>
-<p>## 介绍
-一般用于流处理中的最后一步。Stream.collect() 是java 8 stream api中的终止方法。它实现对流实例中保存的数据元素执行可变的折叠操作。此操作的策略由Collector接口实现提供。</p>
+<h2 id="_1">介绍</h2>
+<p>一般用于流处理中的最后一步。Stream.collect() 是java 8 stream api中的终止方法。它实现对流实例中保存的数据元素执行可变的折叠操作。此操作的策略由Collector接口实现提供。</p>
 <h2 id="collectors_1">常见的 Collectors静态方法</h2>
 <table>
 <thead>

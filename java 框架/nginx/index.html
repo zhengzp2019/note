@@ -16,7 +16,7 @@
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/highlight.css">
-    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -83,7 +83,7 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 
     <h1 id="nginx">nginx</h1>
 <div class="highlight"><pre><span></span><code><span class="c1">## 查看nginx是否启动</span>
-ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nginx<span class="w"> </span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nginx
 <span class="c1">## 查看客户端请求历史</span>
 tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/access.log
 <span class="c1">## 查看nginx错误日志</span>
@@ -95,7 +95,7 @@ nginx<span class="w"> </span>-t
 <span class="c1">## 配置热加载</span>
 nginx<span class="w"> </span>-s<span class="w"> </span>reload
 </code></pre></div>
-<p>代理配置示例
+<p>代理配置示例</p>
 <div class="highlight"><pre><span></span><code><span class="err">server</span><span class="p">{</span>
 <span class="w">        </span><span class="err">lis</span><span class="kc">ten</span><span class="w"> </span><span class="mi">80</span><span class="err">;</span><span class="w"> </span><span class="err">#</span><span class="w"> </span><span class="err">监听端口</span>
 <span class="w">        </span><span class="err">server_</span><span class="kc">na</span><span class="err">me</span><span class="w"> </span><span class="err">dpbirder.dev.jd.local;</span>
@@ -110,7 +110,7 @@ nginx<span class="w"> </span>-s<span class="w"> </span>reload
 <span class="w">                </span><span class="err">proxy_read_</span><span class="kc">t</span><span class="err">imeou</span><span class="kc">t</span><span class="w"> </span><span class="mi">10</span><span class="err">s;</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="p">}</span>
-</code></pre></div></p>
+</code></pre></div>
 
   <br>
     

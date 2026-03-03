@@ -16,7 +16,7 @@
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/highlight.css">
-    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -84,21 +84,21 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
     
 
     <h1 id="_1">测试</h1>
-<div class="highlight"><pre><span></span><code><span class="c1">// 创建 Mock mock(Class.class) @Mock </span>
-<span class="c1">// 配置行为 </span>
-<span class="n">when</span><span class="p">(</span><span class="n">mock</span><span class="p">.</span><span class="na">method</span><span class="p">()).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="n">when</span><span class="p">(</span><span class="n">mock</span><span class="p">.</span><span class="na">method</span><span class="p">()).</span><span class="na">thenThrow</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span><span class="w"> </span><span class="n">doReturn</span><span class="p">(</span><span class="n">value</span><span class="p">).</span><span class="na">when</span><span class="p">(</span><span class="n">mock</span><span class="p">).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">doThrow</span><span class="p">(</span><span class="n">exception</span><span class="p">).</span><span class="na">when</span><span class="p">(</span><span class="n">mock</span><span class="p">).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span>
-<span class="c1">// 参数匹配 any() </span>
-<span class="n">anyString</span><span class="p">(),</span><span class="w"> </span><span class="n">anyInt</span><span class="p">(),</span><span class="w"> </span><span class="n">anyLong</span><span class="p">()</span><span class="w"> </span><span class="n">eq</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="n">argThat</span><span class="p">(</span><span class="n">Predicate</span><span class="p">)</span><span class="w"> </span>
-<span class="c1">// 验证 </span>
-<span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="p">(</span><span class="n">n</span><span class="p">)).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">,</span><span class="w"> </span><span class="n">never</span><span class="p">()).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">,</span><span class="w"> </span><span class="n">atLeast</span><span class="p">(</span><span class="n">n</span><span class="p">)).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span>
-<span class="c1">// 捕获参数 </span>
+<div class="highlight"><pre><span></span><code><span class="c1">// 创建 Mock mock(Class.class) @Mock</span>
+<span class="c1">// 配置行为</span>
+<span class="n">when</span><span class="p">(</span><span class="n">mock</span><span class="p">.</span><span class="na">method</span><span class="p">()).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="n">when</span><span class="p">(</span><span class="n">mock</span><span class="p">.</span><span class="na">method</span><span class="p">()).</span><span class="na">thenThrow</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span><span class="w"> </span><span class="n">doReturn</span><span class="p">(</span><span class="n">value</span><span class="p">).</span><span class="na">when</span><span class="p">(</span><span class="n">mock</span><span class="p">).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">doThrow</span><span class="p">(</span><span class="n">exception</span><span class="p">).</span><span class="na">when</span><span class="p">(</span><span class="n">mock</span><span class="p">).</span><span class="na">method</span><span class="p">()</span>
+<span class="c1">// 参数匹配 any()</span>
+<span class="n">anyString</span><span class="p">(),</span><span class="w"> </span><span class="n">anyInt</span><span class="p">(),</span><span class="w"> </span><span class="n">anyLong</span><span class="p">()</span><span class="w"> </span><span class="n">eq</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="n">argThat</span><span class="p">(</span><span class="n">Predicate</span><span class="p">)</span>
+<span class="c1">// 验证</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="p">(</span><span class="n">n</span><span class="p">)).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">,</span><span class="w"> </span><span class="n">never</span><span class="p">()).</span><span class="na">method</span><span class="p">()</span><span class="w"> </span><span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">,</span><span class="w"> </span><span class="n">atLeast</span><span class="p">(</span><span class="n">n</span><span class="p">)).</span><span class="na">method</span><span class="p">()</span>
+<span class="c1">// 捕获参数</span>
 <span class="n">ArgumentCaptor</span><span class="o">&lt;</span><span class="n">Type</span><span class="o">&gt;</span><span class="w"> </span><span class="n">captor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgumentCaptor</span><span class="p">.</span><span class="na">forClass</span><span class="p">(</span><span class="n">Type</span><span class="p">.</span><span class="na">class</span><span class="p">)</span><span class="w"> </span><span class="n">verify</span><span class="p">(</span><span class="n">mock</span><span class="p">).</span><span class="na">method</span><span class="p">(</span><span class="n">captor</span><span class="p">.</span><span class="na">capture</span><span class="p">())</span><span class="w"> </span><span class="n">Type</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">captor</span><span class="p">.</span><span class="na">getValue</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="_2">单测与集成测试的决策</h2>
 <div class="highlight"><pre><span></span><code>📊 决策树： 需要测试 Spring 特性（事务、AOP、Security等）？
- ├─ 是 → 使用 @SpringBootTest 
-     └─ 否 → 需要测试多个 Bean 的集成？ 
-     ├─ 是 → 使用 @SpringBootTest + @MockBean 
+ ├─ 是 → 使用 @SpringBootTest
+     └─ 否 → 需要测试多个 Bean 的集成？
+     ├─ 是 → 使用 @SpringBootTest + @MockBean
          └─ 否 → 使用纯 Mockito 单元测试 ✅ (推荐)
 </code></pre></div>
 <h2 id="_3">总结</h2>

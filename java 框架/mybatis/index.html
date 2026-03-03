@@ -16,7 +16,7 @@
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/highlight.css">
-    <link href="../../styles/admonition-fix.css" rel="stylesheet">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -93,40 +93,43 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <blockquote>
 <p>使用 PageHelper 插件</p>
 </blockquote>
-<p><strong>核心类和接口</strong>
-- Dialect
-- PageHelper
-- PageInfo：取出分页结果</p>
-<p><strong>关键方法</strong>
-- PageHelper.startPage：开启分页查询，该方法后的第一个 Mybatis 查询方法会被进行分页
-- PageHelper.offsetPage：</p>
+<p><strong>核心类和接口</strong></p>
+<ul>
+<li>Dialect</li>
+<li>PageHelper</li>
+<li>PageInfo：取出分页结果</li>
+</ul>
+<p><strong>关键方法</strong></p>
+<ul>
+<li>PageHelper.startPage：开启分页查询，该方法后的第一个 Mybatis 查询方法会被进行分页</li>
+<li>PageHelper.offsetPage：</li>
+</ul>
 <p><strong>使用步骤</strong></p>
-<p>1、引入 pom 依赖
+<p>1、引入 pom 依赖</p>
 <div class="highlight"><pre><span></span><code><span class="cm">&lt;!-- PageHelper 分页插件 --&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.github.pagehelper<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>pagehelper-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;version&gt;</span>1.4.6<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></p>
-<p>2、定义Mapper 接口 和 sql
- ```java
-@Mapper
-public interface UserMapper {</p>
-<pre><code>List&lt;User&gt; selectAll();
-</code></pre>
-<p>}
-<code></code>xml
-<?xml version="1.0" encoding="UTF-8"?>
-&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;
-<mapper namespace="com.example.mapper.UserMapper">
+</code></pre></div>
+<p>2、定义Mapper 接口 和 sql</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Mapper</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">UserMapper</span><span class="w"> </span><span class="p">{</span>
 
-    <select id="selectAll" resultType="com.example.entity.User">
-        SELECT id, name, age, email FROM user
-    </select>
+<span class="w">   </span><span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">selectAll</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;</span>
+<span class="nt">&lt;mapper</span><span class="w"> </span><span class="na">namespace=</span><span class="s">&quot;com.example.mapper.UserMapper&quot;</span><span class="nt">&gt;</span>
 
-</mapper>
-```</p>
+<span class="w">    </span><span class="nt">&lt;select</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;selectAll&quot;</span><span class="w"> </span><span class="na">resultType=</span><span class="s">&quot;com.example.entity.User&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span>SELECT<span class="w"> </span>id,<span class="w"> </span>name,<span class="w"> </span>age,<span class="w"> </span>email<span class="w"> </span>FROM<span class="w"> </span>user
+<span class="w">    </span><span class="nt">&lt;/select&gt;</span>
+
+<span class="nt">&lt;/mapper&gt;</span>
+</code></pre></div>
 <p>3、在 服务层使用分页</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Service</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserService</span><span class="w"> </span><span class="p">{</span>
@@ -164,7 +167,7 @@ public interface UserMapper {</p>
 </code></pre></div>
 <h2 id="_2">参考</h2>
 <ul>
-<li>https://pagehelper.github.io/docs/howtouse/</li>
+<li><a href="https://pagehelper.github.io/docs/howtouse/">https://pagehelper.github.io/docs/howtouse/</a></li>
 </ul>
 
   <br>
