@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     
-    <link rel="canonical" href="https://zhengzp2019.github.io/note/java%20%E5%9F%BA%E7%A1%80/Collectors/">
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/java/%E9%87%8D%E8%AF%95%E7%BB%84%E4%BB%B6/">
     <link rel="shortcut icon" href="../../img/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <title>Collectors - mydocs</title>
+    <title>重试组件 - mydocs</title>
     <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
@@ -33,9 +33,7 @@
       var is_top_frame = false;
         
         var pageToc = [
-          {title: "Collectors", url: "#_top", children: [
-              {title: "\u4ecb\u7ecd", url: "#_1" },
-              {title: "\u5e38\u89c1\u7684 Collectors\u9759\u6001\u65b9\u6cd5", url: "#collectors_1" },
+          {title: "\u91cd\u8bd5\u7ec4\u4ef6", url: "#_top", children: [
           ]},
         ];
 
@@ -62,20 +60,20 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
   <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
     
     <div class="wm-article-nav pull-right">
-      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-right">
+      <a href="../../%E5%B7%A5%E5%85%B7/Ubuntu%20%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="btn btn-xs btn-default pull-right">
         Next
         <i class="fa fa-chevron-right" aria-hidden="true"></i>
       </a>
-      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
-        java8 新特性
+      <a href="../../%E5%B7%A5%E5%85%B7/Ubuntu%20%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="btn btn-xs btn-link">
+        Ubuntu 命令手册
       </a>
     </div>
     
     <div class="wm-article-nav">
-      <a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-default pull-left">
+      <a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-default pull-left">
         <i class="fa fa-chevron-left" aria-hidden="true"></i>
-        Previous</a><a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-link">
-        基本概念
+        Previous</a><a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-link">
+        测试
       </a>
     </div>
     
@@ -83,36 +81,9 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 
     
 
-    <h1 id="collectors">Collectors</h1>
-<h2 id="_1">介绍</h2>
-<p>一般用于流处理中的最后一步。Stream.collect() 是java 8 stream api中的终止方法。它实现对流实例中保存的数据元素执行可变的折叠操作。此操作的策略由Collector接口实现提供。</p>
-<h2 id="collectors_1">常见的 Collectors静态方法</h2>
-<table>
-<thead>
-<tr>
-<th>方法名</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>toList()</td>
-<td>将 stream 中的元素收集到 list 实例。该方法不能作用于 List 的实现类。</td>
-</tr>
-<tr>
-<td>toSet()</td>
-<td>将 stream 中的元素收集到 set 实例。同上。</td>
-</tr>
-<tr>
-<td>toMap()</td>
-<td>将 stream 中的元素收集到 map 实例。同上。</td>
-</tr>
-<tr>
-<td>mapping()</td>
-<td>把流中的元素映射为另一个类型，然后用下游收集器收集。</td>
-</tr>
-</tbody>
-</table>
+    <h1 id="_1">重试组件</h1>
+<p><a href="https://developer.aliyun.com/article/1475194">https://developer.aliyun.com/article/1475194</a>
+<a href="https://cloud.tencent.com/developer/article/1749520">https://cloud.tencent.com/developer/article/1749520</a></p>
 
   <br>
     
@@ -125,20 +96,20 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
   <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
     
     <div class="wm-article-nav pull-right">
-      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-right">
+      <a href="../../%E5%B7%A5%E5%85%B7/Ubuntu%20%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="btn btn-xs btn-default pull-right">
         Next
         <i class="fa fa-chevron-right" aria-hidden="true"></i>
       </a>
-      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
-        java8 新特性
+      <a href="../../%E5%B7%A5%E5%85%B7/Ubuntu%20%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="btn btn-xs btn-link">
+        Ubuntu 命令手册
       </a>
     </div>
     
     <div class="wm-article-nav">
-      <a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-default pull-left">
+      <a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-default pull-left">
         <i class="fa fa-chevron-left" aria-hidden="true"></i>
-        Previous</a><a href="../../AI/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" class="btn btn-xs btn-link">
-        基本概念
+        Previous</a><a href="../%E6%B5%8B%E8%AF%95/" class="btn btn-xs btn-link">
+        测试
       </a>
     </div>
     
@@ -149,7 +120,7 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 
 <footer class="container-fluid wm-page-content">
       <p>
-        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java 基础/Collectors.md">Edit on note</a>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java/重试组件.md">Edit on note</a>
       </p>
   <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
 </footer>

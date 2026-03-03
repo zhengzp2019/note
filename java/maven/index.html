@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/java/maven/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Maven 常用编译命令 - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "Maven \u5e38\u7528\u7f16\u8bd1\u547d\u4ee4", url: "#_top", children: [
+              {title: "\u8bf4\u660e", url: "#_1" },
+              {title: "1. \u7f16\u8bd1\u6307\u5b9a\u6a21\u5757\uff08\u53ef\u9009\u540c\u65f6\u7f16\u8bd1\u5176\u4f9d\u8d56\u6a21\u5757\uff09", url: "#1" },
+              {title: "2. \u7f16\u8bd1\u6574\u4e2a\u9879\u76ee", url: "#2" },
+              {title: "\u5e38\u89c1\u8865\u5145", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../mybatis/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../mybatis/" class="btn btn-xs btn-link">
+        mybatis
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../kubernetes/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../kubernetes/" class="btn btn-xs btn-link">
+        Kubernetes 学习
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="maven">Maven 常用编译命令</h1>
+<h2 id="_1">说明</h2>
+<p>Maven 以模块（module）为最小构建单元，不支持直接只编译某一个 <code>.java</code> 文件。<br />
+因此“编译一个类”通常是指“在目标模块内执行编译”。</p>
+<h2 id="1">1. 编译指定模块（可选同时编译其依赖模块）</h2>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span>-pl<span class="w"> </span>&lt;module-name&gt;<span class="w"> </span>-DskipTests<span class="w"> </span>compile
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span>-pl<span class="w"> </span>&lt;module-name&gt;<span class="w"> </span>-am<span class="w"> </span>-DskipTests<span class="w"> </span>compile
+</code></pre></div>
+<p>适用场景：只编译某个模块；如果该模块依赖同工程内其他模块，则加 <code>-am</code> 一并构建。</p>
+<p>参数说明：</p>
+<ul>
+<li><code>-pl &lt;module-name&gt;</code>：仅构建指定模块（<code>--projects</code> 的缩写）。</li>
+<li><code>-am</code>：同时构建目标模块依赖的上游模块（<code>--also-make</code> 的缩写），可选。</li>
+<li><code>-DskipTests</code>：跳过测试执行，缩短构建时间。</li>
+<li><code>compile</code>：执行 <code>compile</code> 生命周期阶段，编译主代码（<code>src/main/java</code>）。</li>
+</ul>
+<h2 id="2">2. 编译整个项目</h2>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span>-DskipTests<span class="w"> </span>compile
+</code></pre></div>
+<p>适用场景：希望一次性检查整个仓库所有模块的编译状态。</p>
+<p>参数说明：</p>
+<ul>
+<li><code>-DskipTests</code>：跳过测试执行。</li>
+<li><code>compile</code>：编译所有模块的主代码。</li>
+</ul>
+<h2 id="_2">常见补充</h2>
+<ul>
+<li><code>-DskipTests</code> 只跳过测试运行，不影响测试代码是否被编译（取决于执行到的生命周期阶段）。</li>
+<li>如果需要完整构建产物，使用 <code>package</code> 或 <code>install</code>，例如：<code>mvn -DskipTests package</code>。</li>
+</ul>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../mybatis/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../mybatis/" class="btn btn-xs btn-link">
+        mybatis
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../kubernetes/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../kubernetes/" class="btn btn-xs btn-link">
+        Kubernetes 学习
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java/maven.md">Edit on note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

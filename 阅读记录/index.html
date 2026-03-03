@@ -33,21 +33,14 @@
       var is_top_frame = false;
         
         var pageToc = [
-          {title: "Agent\u57fa\u672c\u6982\u5ff5", url: "#_top", children: [
-          ]},
-          {title: "\u751f\u6210\u5f0f\u63a8\u8350", url: "#_1", children: [
-          ]},
-          {title: "AI coding", url: "#ai-coding", children: [
-          ]},
-          {title: "LLM \u5f00\u53d1", url: "#llm", children: [
-          ]},
-          {title: "Agent\u5b9e\u6218", url: "#agent_1", children: [
-          ]},
-          {title: "\u7279\u5f81\u5e73\u53f0", url: "#_2", children: [
-          ]},
-          {title: "\u8f6f\u4ef6\u6784\u9020", url: "#_3", children: [
-          ]},
-          {title: "\u9605\u8bfb\u8bb0\u5f55", url: "#_4", children: [
+          {title: "\u9605\u8bfb\u8bb0\u5f55", url: "#_top", children: [
+              {title: "Agent\u57fa\u672c\u6982\u5ff5", url: "#agent" },
+              {title: "\u751f\u6210\u5f0f\u63a8\u8350", url: "#_2" },
+              {title: "AI coding", url: "#ai-coding" },
+              {title: "LLM \u5f00\u53d1", url: "#llm" },
+              {title: "Agent\u5b9e\u6218", url: "#agent_1" },
+              {title: "\u7279\u5f81\u5e73\u53f0", url: "#_3" },
+              {title: "\u8f6f\u4ef6\u6784\u9020", url: "#_4" },
               {title: "\u79d1\u6280", url: "#_5" },
           ]},
         ];
@@ -96,7 +89,8 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 
     
 
-    <h2 id="agent">Agent基本概念</h2>
+    <h1 id="_1">阅读记录</h1>
+<h2 id="agent">Agent基本概念</h2>
 <ol>
 <li><a href="https://www.51cto.com/article/820857.html">mcp开发技术对比</a>✅</li>
 <li><a href="https://mp.weixin.qq.com/s/9wDzwABccIoqt33UaTAWCg">skills介绍</a></li>
@@ -104,7 +98,7 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <li><a href="">claude skills</a></li>
 <li><a href="https://mp.weixin.qq.com/s/mftM6jr0YiFxRATeNvm5Qg">Agent Memory</a></li>
 </ol>
-<h2 id="_1">生成式推荐</h2>
+<h2 id="_2">生成式推荐</h2>
 <ol>
 <li><a href="https://mp.weixin.qq.com/s/xe6RYpYXNP2JKehL0kk8vg">生成式推荐-快手</a>✅</li>
 <li><a href="https://mp.weixin.qq.com/s/JiDOqD-ThU0Upp6xnNg3Nw">生成式推荐-美团</a>
@@ -116,19 +110,19 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <h2 id="ai-coding">AI coding</h2>
 <ol>
 <li><a href="https://mp.weixin.qq.com/s/vqqw60fwEfI3pjBgUc4QUg">AI coding与单元测试的协同进化：从验证到驱动</a>✅
-   摘要：
-   1、让AI编写单测来验证AI coding的有效性，增加对AI代码的信任度，避免人工审查AI代码。
-   2、通过单测构建存量代码的护城河，清晰界定AI对存量代码的修改边界，保障旧逻辑的正确性。
-   3、利用TDD驱动开发的思想，缓解AI coding的不确定性，返工频繁的问题。</li>
-<li><a href="https://mp.weixin.qq.com/s/RU9TIveyjPvIXCsoVPp69w">AI coding后端开发实战</a>✅</li>
-<li><a href="https://mp.weixin.qq.com/s/t8KfhFo5NmjzAoFrzghMeQ">AI辅助重构</a></li>
-<li><a href="https://mp.weixin.qq.com/s/MjBVTfo6Kp2RDG6v46_BPA">AI coding 长文分享</a>✅</li>
-<li><a href="https://mp.weixin.qq.com/s/K4ZUGBzT0s9RwFlaYcuHiA">ReAct &amp; Ralph Loop</a></li>
-<li><a href="https://mp.weixin.qq.com/s/W6-e-uSPcGCqQAXxx_PDgA">从Vibe Coding到SDD</a></li>
-<li><a href="https://mp.weixin.qq.com/s/S9XBcdof43MdwYd2tXGl1Q">从传统编程到大模型编程</a></li>
-<li><a href="https://mp.weixin.qq.com/s/aaN7MlGFkZLm0xlyMzNb5A">OpenClaw 机器之心</a></li>
-<li><a href="https://mp.weixin.qq.com/s/CcgyFCIq2puwrtK0-kuzcQ">OpenClaw 新智元</a>（好几篇）</li>
+   摘要：</li>
 </ol>
+<p>1、让AI编写单测来验证AI coding的有效性，增加对AI代码的信任度，避免人工审查AI代码。
+   2、通过单测构建存量代码的护城河，清晰界定AI对存量代码的修改边界，保障旧逻辑的正确性。
+   3、利用TDD驱动开发的思想，缓解AI coding的不确定性，返工频繁的问题。
+2. <a href="https://mp.weixin.qq.com/s/RU9TIveyjPvIXCsoVPp69w">AI coding后端开发实战</a>✅
+3. <a href="https://mp.weixin.qq.com/s/t8KfhFo5NmjzAoFrzghMeQ">AI辅助重构</a>
+4. <a href="https://mp.weixin.qq.com/s/MjBVTfo6Kp2RDG6v46_BPA">AI coding 长文分享</a>✅
+5. <a href="https://mp.weixin.qq.com/s/K4ZUGBzT0s9RwFlaYcuHiA">ReAct &amp; Ralph Loop</a>
+6. <a href="https://mp.weixin.qq.com/s/W6-e-uSPcGCqQAXxx_PDgA">从Vibe Coding到SDD</a>
+7. <a href="https://mp.weixin.qq.com/s/S9XBcdof43MdwYd2tXGl1Q">从传统编程到大模型编程</a>
+8. <a href="https://mp.weixin.qq.com/s/aaN7MlGFkZLm0xlyMzNb5A">OpenClaw 机器之心</a>
+9. <a href="https://mp.weixin.qq.com/s/CcgyFCIq2puwrtK0-kuzcQ">OpenClaw 新智元</a>（好几篇）</p>
 <h2 id="llm">LLM 开发</h2>
 <ol>
 <li><a href="https://mp.weixin.qq.com/s/PsUuWLDTYS0O5Ug5285PaA">LangChain</a>✅</li>
@@ -145,18 +139,18 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <li><a href="https://mp.weixin.qq.com/s/o66p25Oa19g5QQ67HNz8Sw">Moltbot实战</a></li>
 <li><a href="https://developer.aliyun.com/ebook/8479/read?spm=a2c6h.26392459.ebook-detail.2.1df3314ckIt9v8">《AI原生应用架构白皮书》</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/1995167173094695116">Agentic Ops</a></li>
+<li><a href="https://mp.weixin.qq.com/s/nClVag8tyw7wuG-V1rhmfQ">spec coding + skill 实战</a>🌟</li>
 </ol>
-<h2 id="_2">特征平台</h2>
+<h2 id="_3">特征平台</h2>
 <ol>
 <li><a href="https://tech.meituan.com/2021/03/04/featureplatform-in-mtwaimai.html">美团外卖特征平台的建设与展望</a></li>
 </ol>
-<h2 id="_3">软件构造</h2>
+<h2 id="_4">软件构造</h2>
 <ol>
 <li><a href="https://mp.weixin.qq.com/s/Z6uwDk_p-JCJtZJKojSx-w">技术架构</a>✅
    摘要：业务/产品架构、应用架构、技术架构、代码架构、数据架构。宗旨是“分层”。</li>
 <li><a href="https://mp.weixin.qq.com/s/MGeEoDrl1ifUX3Z8fOBAsQ">2025年热门技术文章-美团</a></li>
 </ol>
-<h1 id="_4">阅读记录</h1>
 <h2 id="_5">科技</h2>
 <ol>
 <li><a href="https://mp.weixin.qq.com/s/2Z0CAE6bsWeD_2WQh9sSVg">腾讯AI布局</a></li>
