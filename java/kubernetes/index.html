@@ -35,6 +35,9 @@
         var pageToc = [
           {title: "Kubernetes \u5b66\u4e60", url: "#_top", children: [
               {title: "\u5e38\u7528\u547d\u4ee4", url: "#_1" },
+              {title: "\u95ee\u9898\u6392\u67e5\u8bb0\u5f55", url: "#_2" },
+              {title: "Swift Broker CrashLoop \u6392\u67e5\u547d\u4ee4\uff08\u5b66\u4e60\u7248\uff09", url: "#swift-broker-crashloop" },
+              {title: "Swift Broker CrashLoop \u5b9e\u6218\u8fc7\u7a0b\uff08\u65f6\u95f4\u7ebf\uff09", url: "#swift-broker-crashloop_1" },
           ]},
         ];
 
@@ -84,18 +87,28 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 
     <h1 id="kubernetes">Kubernetes 学习</h1>
 <h2 id="_1">常用命令</h2>
-<h3 id="1-pods">1. 查看命名空间下的 Pods</h3>
+<h3 id="1-pods-o-wide">1. 查看命名空间下的 Pods（含 <code>-o wide</code>）</h3>
 <p>命令：
 <code>kubectl get pods -n &lt;namespace&gt;</code></p>
+<p>扩展命令（查看更多排查信息）：
+<code>kubectl get pods -n &lt;namespace&gt; -o wide</code></p>
 <p>参数说明：</p>
 <ul>
 <li><code>get</code>：查询资源列表。</li>
 <li><code>pods</code>：资源类型，表示 Pod。</li>
 <li><code>-n</code>：<code>--namespace</code> 的简写，指定命名空间。</li>
 <li><code>&lt;namespace&gt;</code>：命名空间名称，例如 <code>default</code>、<code>kube-system</code>。</li>
+<li><code>-o wide</code>：在默认输出基础上，增加排查常用字段（如 <code>NODE</code>、<code>IP</code> 等）。</li>
 </ul>
+<p>什么时候用 <code>-o wide</code>：</p>
+<ol>
+<li>怀疑是节点维度问题（某台机器异常）时。</li>
+<li>要核对 Pod IP、跨节点分布、网络连通性时。</li>
+<li>要快速对比正常 Pod 与异常 Pod 是否落在同一节点时。</li>
+</ol>
 <p>示例：
-<code>kubectl get pods -n default</code></p>
+<code>kubectl get pods -n default</code>
+<code>kubectl get pods -n feature-worker -o wide</code></p>
 <h3 id="2-pod">2. 查看 Pod 详细信息</h3>
 <p>命令：
 <code>kubectl describe pod &lt;pod-name&gt; -n &lt;namespace&gt;</code></p>
@@ -135,6 +148,191 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 </ul>
 <p>示例：
 <code>kubectl logs -f nginx-6f7d7cbdc8-abcde -n default</code></p>
+<h2 id="_2">问题排查记录</h2>
+<h3 id="_3">场景</h3>
+<p><code>feature-master</code> 命名空间中 <code>ops-swift</code> Pod 持续 <code>CrashLoopBackOff</code>，容器退出码 <code>255</code>，无法就绪。</p>
+<h3 id="_4">排查思路</h3>
+<ol>
+<li>先排除基础问题：调度、镜像拉取、资源不足（OOM）。</li>
+<li>再定位应用级失败：优先看 <code>describe</code> 的 <code>Last State</code> 与 <code>Events</code>，再看 <code>logs --previous</code>。</li>
+<li>由于标准输出信息过少，进入同镜像调试环境读取落盘日志（<code>logs/swift/swift.log</code>）。</li>
+<li>最后回溯到配置生成链路，确认模板变量来源与最终渲染结果。</li>
+</ol>
+<h3 id="_5">关键指令</h3>
+<ol>
+<li>
+<p>查看 Pod 状态
+   <code>kubectl get po -n feature-master</code></p>
+</li>
+<li>
+<p>查看 Pod 详情（重启原因、事件）
+   <code>kubectl describe pod &lt;pod-name&gt; -n feature-master</code></p>
+</li>
+<li>
+<p>查看当前与上次崩溃日志
+   <code>kubectl logs &lt;pod-name&gt; -n feature-master</code>
+   <code>kubectl logs &lt;pod-name&gt; -n feature-master --previous</code></p>
+</li>
+<li>
+<p>查看 Deployment 启动参数与环境变量
+   <code>kubectl get deploy ops-swift -n feature-master -o yaml</code></p>
+</li>
+<li>
+<p>在调试 Pod 中复现启动并读取落盘日志
+   <code>swift_admin -l /ha3_install/usr/local/etc/swift/swift_alog.conf -w . -c zfs://.../config/&lt;version&gt;</code>
+   <code>sed -n '1,200p' logs/swift/swift.log</code></p>
+</li>
+<li>
+<p>直接读取线上生效配置
+   <code>/ha3_install/usr/local/bin/fs_util cat zfs://.../ops-swift/appmaster/config/&lt;version&gt;/swift.conf</code></p>
+</li>
+</ol>
+<h3 id="_6">结果分析</h3>
+<ol>
+<li>调度、拉镜像、资源均正常，问题不在基础设施层。</li>
+<li><code>swift.log</code> 明确报错：<code>UserName can't be empty.</code>，导致 <code>swift_admin</code> 初始化失败并退出。</li>
+<li>线上配置文件 <code>swift.conf</code> 实际内容为 <code>user_name=</code>（空值），与报错一致。</li>
+<li>根因是模板变量 <code>default_variables.user</code> 未被正确填充，最终通过在 Java 侧补齐初始化兜底解决。</li>
+</ol>
+<h3 id="_7">经验总结</h3>
+<ol>
+<li><code>CrashLoopBackOff</code> 首先看 <code>--previous</code>，能最快拿到上一次退出前的关键信息。</li>
+<li>标准输出不足时，要看容器内业务日志文件，而不只看 <code>kubectl logs</code>。</li>
+<li>配置类问题必须“看最终生效配置”，不要只看代码或模板。</li>
+<li>修复后应验证三件事：新配置版本是否下发、配置值是否正确、Pod 是否稳定 <code>1/1</code>。</li>
+</ol>
+<h2 id="swift-broker-crashloop">Swift Broker CrashLoop 排查命令（学习版）</h2>
+<h3 id="1">1. 排查目标与方法</h3>
+<p>目标：<code>5 分钟内定位是“集群层问题”还是“应用配置问题”</code>。</p>
+<p>方法：按固定顺序执行，避免来回跳。</p>
+<ol>
+<li><code>看状态</code>：先确认哪些 Pod 异常。</li>
+<li><code>看原因</code>：用 <code>describe</code> 找退出原因和事件。</li>
+<li><code>看日志</code>：优先看 <code>--previous</code> 拿到上一次崩溃信息。</li>
+<li><code>看配置</code>：去线上生效配置里核对关键字段。</li>
+<li><code>做修复</code>：清理冲突实例或修正配置后再观察。</li>
+</ol>
+<h3 id="2">2. 一组最小可复用命令</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1) 全局看状态（master + worker）</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>feature-master
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>feature-worker
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>-o<span class="w"> </span>wide
+
+<span class="c1"># 2) 精准定位异常 broker</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>zhengzhanpeng.1029-ops-swift.default--broker
+
+<span class="c1"># 3) 看退出原因（Events / Last State）</span>
+kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>zhengzhanpeng.1029-ops-swift.default--broker-0-0-a-353a
+
+<span class="c1"># 4) 看上一次崩溃日志（CrashLoopBackOff 必查）</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>zhengzhanpeng.1029-ops-swift.default--broker-0-0-a-353a<span class="w"> </span>--previous
+
+<span class="c1"># 5) 看编排对象（确认参数是怎么下发的）</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>workernode<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>zhengzhanpeng.1029-ops-swift.default--broker
+kubectl<span class="w"> </span>get<span class="w"> </span>workernode<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>zhengzhanpeng.1029-ops-swift.default--broker-0-0-a<span class="w"> </span>-o<span class="w"> </span>yaml
+kubectl<span class="w"> </span>get<span class="w"> </span>carbonjob<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>zhengzhanpeng.1029-ops-swift
+kubectl<span class="w"> </span>get<span class="w"> </span>carbonjob<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>zhengzhanpeng.1029-ops-swift<span class="w"> </span>-o<span class="w"> </span>yaml
+
+<span class="c1"># 6) 对比正常实例与异常实例的启动参数</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>workernode<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>john-ops-swift.default--broker-2-0-a<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.spec.template.spec.containers[0].args}&quot;</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>workernode<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>zhengzhanpeng.1029-ops-swift.default--broker-2-0-a<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.spec.template.spec.containers[0].args}&quot;</span>
+
+<span class="c1"># 7) 在 admin pod 内读取线上生效配置（关键）</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-n<span class="w"> </span>feature-master<span class="w"> </span>ops-swift-845cbf66b4-d8t2j<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-lc<span class="w"> </span><span class="s2">&quot;export PATH=/ha3_install/usr/local/bin:</span><span class="nv">$PATH</span><span class="s2">; fs_util cat zfs://ha31.zk.jd.local:3990/cluster-ops/ops-swift/appmaster/config/1772532537/swift.conf&quot;</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-n<span class="w"> </span>feature-master<span class="w"> </span>ops-swift-845cbf66b4-d8t2j<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-lc<span class="w"> </span><span class="s2">&quot;export PATH=/ha3_install/usr/local/bin:</span><span class="nv">$PATH</span><span class="s2">; fs_util cat zfs://ha31.zk.jd.local:3990/cluster-ops/ops-swift/appmaster/config/version&quot;</span>
+
+<span class="c1"># 8) 看 admin 侧业务日志</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-n<span class="w"> </span>feature-master<span class="w"> </span>ops-swift-845cbf66b4-d8t2j<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-lc<span class="w"> </span><span class="s2">&quot;tail -n 260 ./logs/swift/swift.log&quot;</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-n<span class="w"> </span>feature-master<span class="w"> </span>ops-swift-845cbf66b4-d8t2j<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-lc<span class="w"> </span><span class="s2">&quot;grep -nE \&quot;ERROR|FATAL|fail|Failed\&quot; ./logs/swift/swift.log | tail -n 200&quot;</span>
+
+<span class="c1"># 9) 修复动作：删除冲突集群</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>carbonjob<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>john-ops-swift
+kubectl<span class="w"> </span>delete<span class="w"> </span>carbonjob<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>john-ops-swift<span class="w"> </span>--wait<span class="o">=</span><span class="nb">false</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>john-ops-swift.default--broker
+</code></pre></div>
+<h3 id="3">3. 这组命令各自解决什么问题</h3>
+<ul>
+<li><code>kubectl get pods</code>：判断是否是“普遍故障”还是“单应用故障”。</li>
+<li><code>kubectl describe pod</code>：拿到退出码、探针失败、调度失败、镜像问题等结构化原因。</li>
+<li><code>kubectl logs --previous</code>：CrashLoop 场景最关键，拿“上一轮崩溃前”日志。</li>
+<li><code>kubectl get ... -o yaml/jsonpath</code>：看真实下发参数，不靠猜。</li>
+<li><code>kubectl exec ... fs_util cat</code>：直接看线上生效配置，确认“代码/模板/下发”哪一层出错。</li>
+</ul>
+<h3 id="4">4. 常见坑</h3>
+<ol>
+<li>只看 <code>kubectl logs</code> 不看 <code>--previous</code>，会漏掉真正的崩溃信息。</li>
+<li>只看代码模板，不看“线上生效配置”，容易误判。</li>
+<li>只盯 Pod，不看 <code>workernode/carbonjob</code>，会错过编排层参数问题。</li>
+<li>删除对象后不复查，无法确认修复是否生效。</li>
+</ol>
+<h3 id="5-3">5. 建议你记住的 3 个模板</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 模板 A：CrashLoop 三连</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;
+kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span>&lt;pod&gt;
+kubectl<span class="w"> </span>logs<span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span>&lt;pod&gt;<span class="w"> </span>--previous
+
+<span class="c1"># 模板 B：参数对比</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>&lt;obj&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span>&lt;name-good&gt;<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{...}&quot;</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>&lt;obj&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span>&lt;name-bad&gt;<span class="w">  </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{...}&quot;</span>
+
+<span class="c1"># 模板 C：线上配置核对</span>
+kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span>&lt;admin-pod&gt;<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-lc<span class="w"> </span><span class="s2">&quot;fs_util cat &lt;config-path&gt;&quot;</span>
+</code></pre></div>
+<h2 id="swift-broker-crashloop_1">Swift Broker CrashLoop 实战过程（时间线）</h2>
+<h3 id="_8">场景</h3>
+<ul>
+<li>现象：<code>feature-worker</code> 下 <code>zhengzhanpeng.1029-ops-swift.default--broker-*</code> 持续 <code>CrashLoopBackOff/Error</code>。</li>
+<li>同时观察到：<code>john-ops-swift.default--broker-*</code> 也在运行，存在资源/配置冲突风险。</li>
+</ul>
+<h3 id="_9">排查步骤</h3>
+<ol>
+<li>先看状态范围。</li>
+<li>执行：<code>kubectl get pods -n feature-master</code>、<code>kubectl get pods -n feature-worker</code>。</li>
+<li>
+<p>结论：异常集中在你这套 broker，非全局故障。</p>
+</li>
+<li>
+<p>看异常 Pod 的退出信息。</p>
+</li>
+<li>执行：<code>kubectl describe pod ...</code>、<code>kubectl logs ... --previous</code>。</li>
+<li>
+<p>结论：容器重复拉起失败，属于应用启动阶段失败。</p>
+</li>
+<li>
+<p>看编排层对象和参数。</p>
+</li>
+<li>执行：<code>kubectl get workernode ... -o yaml</code>、<code>kubectl get carbonjob ... -o yaml</code>。</li>
+<li>
+<p>结论：需要对比正常实例与异常实例参数差异。</p>
+</li>
+<li>
+<p>进入 admin pod 读线上生效配置。</p>
+</li>
+<li>执行：<code>kubectl exec ... fs_util cat zfs://.../swift.conf</code>。</li>
+<li>
+<p>结论：定位到关键配置值异常（例如历史排查里出现过 <code>user_name=</code> 为空）。</p>
+</li>
+<li>
+<p>查看 admin 侧业务日志确认根因。</p>
+</li>
+<li>执行：<code>kubectl exec ... tail/grep ./logs/swift/swift.log</code>。</li>
+<li>
+<p>结论：日志与配置问题一致，确认并非 Kubernetes 调度层问题。</p>
+</li>
+<li>
+<p>做修复并复查。</p>
+</li>
+<li>执行：删除冲突 <code>carbonjob</code>（如 <code>john-ops-swift</code>），再看 pod 状态。</li>
+<li>结论：冲突实例清理后，重新观察 broker 拉起结果。</li>
+</ol>
+<h3 id="_10">这次实战得到的固定流程</h3>
+<ol>
+<li><code>get</code> 定位范围。</li>
+<li><code>describe + logs --previous</code> 锁定失败点。</li>
+<li><code>workernode/carbonjob</code> 看参数来源。</li>
+<li><code>exec + fs_util cat</code> 看最终配置。</li>
+<li>修复后必须回到 <code>get pods</code> 做闭环验证。</li>
+</ol>
 
   <br>
     

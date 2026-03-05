@@ -11,7 +11,7 @@
     <link rel="canonical" href="https://zhengzp2019.github.io/note/%E5%B7%A5%E5%85%B7/Ubuntu%20%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/">
     <link rel="shortcut icon" href="../../img/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <title>Ubuntu 命令手册 - mydocs</title>
+    <title>Linux 学习 - mydocs</title>
     <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
@@ -33,10 +33,18 @@
       var is_top_frame = false;
         
         var pageToc = [
-          {title: "Ubuntu \u547d\u4ee4\u624b\u518c", url: "#_top", children: [
-              {title: "ssh", url: "#ssh" },
-              {title: "\u7f51\u7edc\u76f8\u5173", url: "#_1" },
-              {title: "bash", url: "#bash" },
+          {title: "Linux \u5b66\u4e60", url: "#_top", children: [
+              {title: "\u5305\u7ba1\u7406", url: "#_1" },
+              {title: "\u8fdc\u7a0b\u8fde\u63a5\u4e0e SSH", url: "#ssh" },
+              {title: "\u7f51\u7edc\u6392\u67e5\u4e0e\u4e0b\u8f7d", url: "#_2" },
+              {title: "Shell \u4e0e\u57fa\u7840\u7edf\u8ba1", url: "#shell" },
+              {title: "\u6587\u672c\u641c\u7d22\uff08grep\uff09", url: "#grep" },
+              {title: "\u6587\u672c\u5904\u7406\uff08awk\uff09", url: "#awk" },
+              {title: "\u6587\u672c\u7f16\u8f91\uff08vim\uff09", url: "#vim" },
+              {title: "\u65e5\u5fd7\u67e5\u770b\uff08tail\uff09", url: "#tail" },
+              {title: "\u6587\u672c\u641c\u7d22\uff08grep\uff09- Kubernetes \u6392\u67e5\u5b66\u4e60\u7248", url: "#grep-kubernetes" },
+              {title: "grep \u5b9e\u6218\u8fc7\u7a0b\uff08\u7ed3\u5408\u672c\u6b21\u6392\u67e5\uff09", url: "#grep_1" },
+              {title: "\u6587\u672c\u6d41\u7f16\u8f91\uff08sed\uff09", url: "#sed" },
           ]},
         ];
 
@@ -84,34 +92,347 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 
     
 
-    <h1 id="ubuntu">Ubuntu 命令手册</h1>
+    <h1 id="linux">Linux 学习</h1>
+<h2 id="_1">包管理</h2>
 <div class="highlight"><pre><span></span><code>apt
-
 yum
 </code></pre></div>
-<h2 id="ssh">ssh</h2>
-<div class="highlight"><pre><span></span><code><span class="c1">## 查看ssh服务是否启动</span>
+<h2 id="ssh">远程连接与 SSH</h2>
+<div class="highlight"><pre><span></span><code><span class="c1">## 查看 ssh 服务是否启动</span>
 sudo<span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>ssh
+
+<span class="c1">## 重启 ssh 服务</span>
 /etc/init.d/ssh<span class="w"> </span>restart
-<span class="c1">## 开启ssh服务</span>
 
-<span class="c1">## 生成ssh密钥</span>
+<span class="c1">## 生成 ssh 密钥</span>
+ssh-keygen<span class="w"> </span>-t<span class="w"> </span>rsa<span class="w"> </span>-b<span class="w"> </span><span class="m">4096</span>
 </code></pre></div>
-<h2 id="_1">网络相关</h2>
+<h2 id="_2">网络排查与下载</h2>
 <div class="highlight"><pre><span></span><code>netstat
-
 ping
-
 curl
-
 telnet
-
 wget
 </code></pre></div>
-<h2 id="bash">bash</h2>
+<h2 id="shell">Shell 与基础统计</h2>
 <div class="highlight"><pre><span></span><code><span class="c1">## 统计目录下文件数目</span>
-ls<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>ws
+ls<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
 </code></pre></div>
+<h2 id="grep">文本搜索（grep）</h2>
+<div class="highlight"><pre><span></span><code><span class="c1">## 在文件中搜索关键字</span>
+grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>app.log
+
+<span class="c1">## 忽略大小写搜索</span>
+grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;warning&quot;</span><span class="w"> </span>app.log
+
+<span class="c1">## 显示行号</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;port&quot;</span><span class="w"> </span>nginx.conf
+
+<span class="c1">## 递归搜索目录下所有文件</span>
+grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>.
+
+<span class="c1">## 只显示匹配到的文件名</span>
+grep<span class="w"> </span>-rl<span class="w"> </span><span class="s2">&quot;spring.datasource&quot;</span><span class="w"> </span>.
+
+<span class="c1">## 反向匹配（排除包含关键字的行）</span>
+grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;^#&quot;</span><span class="w"> </span>/etc/ssh/sshd_config
+
+<span class="c1">## 显示匹配行前后文</span>
+grep<span class="w"> </span>-n<span class="w"> </span>-C<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="s2">&quot;Exception&quot;</span><span class="w"> </span>app.log
+
+<span class="c1">## 正则匹配</span>
+grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;^(?!#).*&quot;</span><span class="w"> </span>/etc/ssh/sshd_config
+</code></pre></div>
+<h3 id="rg-grep-rg">rg 与 grep 的区别（推荐优先用 rg）</h3>
+<ol>
+<li>相同点：都能按关键字搜索文本，也都支持正则。</li>
+<li>不同点：</li>
+<li><code>rg</code>（ripgrep）默认递归搜索、速度更快、默认遵守 <code>.gitignore</code>。</li>
+<li><code>grep</code> 需要加 <code>-r/-R</code> 才递归，默认不遵守 <code>.gitignore</code>，兼容性更强（系统基本自带）。</li>
+<li>选择建议：</li>
+<li>代码仓库检索优先 <code>rg</code>（快、噪声少）。</li>
+<li>服务器最小环境或脚本兼容性优先 <code>grep</code>。</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1"># rg：默认递归（当前目录）</span>
+rg<span class="w"> </span><span class="s2">&quot;ERROR&quot;</span>
+
+<span class="c1"># grep：递归搜索需加 -r，并建议加 -n 看行号</span>
+grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="w"> </span>.
+
+<span class="c1"># rg 只看文件名（等价 grep -rl）</span>
+rg<span class="w"> </span>-l<span class="w"> </span><span class="s2">&quot;spring.datasource&quot;</span>
+
+<span class="c1"># grep 只看文件名</span>
+grep<span class="w"> </span>-rl<span class="w"> </span><span class="s2">&quot;spring.datasource&quot;</span><span class="w"> </span>.
+</code></pre></div>
+<h2 id="awk">文本处理（awk）</h2>
+<div class="highlight"><pre><span></span><code><span class="c1">## 按空格分隔，打印第 1 和第 4 列</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $1, $4}&#39;</span><span class="w"> </span>access.log
+
+<span class="c1">## 指定分隔符（例如 :）</span>
+awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;:&quot;</span><span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>/etc/passwd
+
+<span class="c1">## 统计文件行数</span>
+awk<span class="w"> </span><span class="s1">&#39;END {print NR}&#39;</span><span class="w"> </span>app.log
+
+<span class="c1">## 统计某列求和（第 3 列）</span>
+awk<span class="w"> </span><span class="s1">&#39;{sum += $3} END {print sum}&#39;</span><span class="w"> </span>data.txt
+
+<span class="c1">## 条件过滤（第 9 列状态码为 500）</span>
+awk<span class="w"> </span><span class="s1">&#39;$9 == 500 {print $0}&#39;</span><span class="w"> </span>access.log
+
+<span class="c1">## 打印文件最后一行</span>
+awk<span class="w"> </span><span class="s1">&#39;END {print}&#39;</span><span class="w"> </span>app.log
+</code></pre></div>
+<h2 id="vim">文本编辑（vim）</h2>
+<div class="highlight"><pre><span></span><code><span class="c1">## 打开文件</span>
+vim<span class="w"> </span>test.txt
+
+<span class="c1">## 模式切换（普通模式按 Esc 返回）</span>
+i
+a<span class="w">            </span><span class="c1"># 在光标后插入</span>
+o<span class="w">            </span><span class="c1"># 在下一行插入</span>
+
+<span class="c1">## 光标移动</span>
+h<span class="w"> </span>j<span class="w"> </span>k<span class="w"> </span>l<span class="w">      </span><span class="c1"># 左 下 上 右</span>
+w<span class="w"> </span>/<span class="w"> </span>b<span class="w">        </span><span class="c1"># 下一个词 / 上一个词</span>
+<span class="m">0</span><span class="w"> </span>/<span class="w"> </span>$<span class="w">        </span><span class="c1"># 行首 / 行尾</span>
+gg<span class="w"> </span>/<span class="w"> </span>G<span class="w">       </span><span class="c1"># 文件开头 / 文件末尾</span>
+
+<span class="c1">## 常用编辑</span>
+yy<span class="w">           </span><span class="c1"># 复制当前行</span>
+p<span class="w">            </span><span class="c1"># 粘贴到下一行</span>
+dd<span class="w">           </span><span class="c1"># 删除当前行</span>
+u<span class="w">            </span><span class="c1"># 撤销</span>
+Ctrl+r<span class="w">       </span><span class="c1"># 重做</span>
+
+<span class="c1">## 搜索与替换</span>
+/keyword<span class="w">     </span><span class="c1"># 向下搜索</span>
+?keyword<span class="w">     </span><span class="c1"># 向上搜索</span>
+n<span class="w"> </span>/<span class="w"> </span>N<span class="w">        </span><span class="c1"># 下一个 / 上一个匹配</span>
+:%s/old/new/g<span class="w">      </span><span class="c1"># 全文替换</span>
+:%s/old/new/gc<span class="w">     </span><span class="c1"># 全文替换并逐个确认</span>
+
+<span class="c1">## 显示与辅助</span>
+:set<span class="w"> </span>number<span class="w">          </span><span class="c1"># 显示行号</span>
+:set<span class="w"> </span>relativenumber<span class="w">  </span><span class="c1"># 显示相对行号</span>
+
+<span class="c1">## 保存与退出</span>
+:w<span class="w">            </span><span class="c1"># 保存</span>
+:q<span class="w">            </span><span class="c1"># 退出</span>
+:wq<span class="w">           </span><span class="c1"># 保存并退出</span>
+:q!<span class="w">           </span><span class="c1"># 不保存强制退出</span>
+</code></pre></div>
+<h2 id="tail">日志查看（tail）</h2>
+<div class="highlight"><pre><span></span><code><span class="c1">## 查看文件最后 10 行（默认）</span>
+tail<span class="w"> </span>app.log
+
+<span class="c1">## 查看最后 50 行</span>
+tail<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w"> </span>app.log
+
+<span class="c1">## 实时跟踪日志</span>
+tail<span class="w"> </span>-f<span class="w"> </span>app.log
+
+<span class="c1">## 实时跟踪并显示最近 100 行</span>
+tail<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w"> </span>-f<span class="w"> </span>app.log
+
+<span class="c1">## 从第 200 行开始向后显示</span>
+tail<span class="w"> </span>-n<span class="w"> </span>+200<span class="w"> </span>app.log
+
+<span class="c1">## 配合 grep 过滤关键字</span>
+tail<span class="w"> </span>-f<span class="w"> </span>app.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;ERROR&quot;</span>
+</code></pre></div>
+<h2 id="grep-kubernetes">文本搜索（grep）- Kubernetes 排查学习版</h2>
+<h3 id="1-6">1. 先记住这 6 个高频参数</h3>
+<div class="highlight"><pre><span></span><code>-n<span class="w">   </span><span class="c1"># 显示行号，便于回看上下文</span>
+-i<span class="w">   </span><span class="c1"># 忽略大小写</span>
+-E<span class="w">   </span><span class="c1"># 使用扩展正则（支持 | 分组）</span>
+-v<span class="w">   </span><span class="c1"># 反向匹配（排除）</span>
+-C<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="c1"># 显示匹配行前后 2 行</span>
+-r<span class="w">   </span><span class="c1"># 递归搜索目录</span>
+</code></pre></div>
+<h3 id="2-grep">2. 本次实战中的 grep 用法拆解</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1) 在 kubectl 输出中筛选目标 Pod</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>zhengzhanpeng.1029-ops-swift.default--broker
+</code></pre></div>
+<p>用途：从大量 Pod 中快速锁定异常对象。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 2) 一次匹配多个关键词（扩展正则）</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>feature-worker<span class="w"> </span>-o<span class="w"> </span>wide<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;john-ops-swift.default--broker|zhengzhanpeng.1029-ops-swift.default--broker&quot;</span>
+</code></pre></div>
+<p>用途：并排比较“正常实例 vs 异常实例”。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 3) 在应用日志里抓 ERROR 链路</span>
+grep<span class="w"> </span>-nEi<span class="w"> </span><span class="s2">&quot;delete table|drop table|drop build|delete topic|Failed to .*table|ERROR&quot;</span><span class="w"> </span>tianji-ops-controller/logs/tianji-ops-dev.log
+</code></pre></div>
+<p>用途：从整份日志提取删除/建表相关失败。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 4) 抽取建表流程关键阶段</span>
+grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;Start to create table|operation: create table|operation: get build Request|operation: get build Response|Failed to generate build task&quot;</span><span class="w"> </span>tianji-ops-controller/logs/tianji-ops-dev.log
+</code></pre></div>
+<p>用途：把流程日志串成一条时序线。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 5) 只看某个 broker 相关日志</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;broker_2_0&quot;</span><span class="w"> </span>./logs/swift/swift.log
+</code></pre></div>
+<p>用途：按实例维度缩小排查范围。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 6) 过滤错误级别</span>
+grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;ERROR|FATAL|fail|Failed&quot;</span><span class="w"> </span>./logs/swift/swift.log
+</code></pre></div>
+<p>用途：优先看失败点，再回头补看上下文。</p>
+<h3 id="3-grep">3. 可直接复用的 grep 模板</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 模板 A：多关键词匹配（最常用）</span>
+grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;kw1|kw2|kw3&quot;</span><span class="w"> </span>&lt;file&gt;
+
+<span class="c1"># 模板 B：忽略大小写 + 行号</span>
+grep<span class="w"> </span>-nEi<span class="w"> </span><span class="s2">&quot;error|failed|exception&quot;</span><span class="w"> </span>&lt;file&gt;
+
+<span class="c1"># 模板 C：先筛再看上下文</span>
+grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;&lt;pattern&gt;&quot;</span><span class="w"> </span>&lt;file&gt;
+grep<span class="w"> </span>-n<span class="w"> </span>-C<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;&lt;exact_line_part&gt;&quot;</span><span class="w"> </span>&lt;file&gt;
+
+<span class="c1"># 模板 D：和 kubectl 组合</span>
+kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>&lt;keyword&gt;
+kubectl<span class="w"> </span>logs<span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span>&lt;pod&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-nE<span class="w"> </span><span class="s2">&quot;ERROR|FATAL|fail|Failed&quot;</span>
+</code></pre></div>
+<h3 id="4">4. 常见误区</h3>
+<ol>
+<li>忘了 <code>-E</code>，导致 <code>|</code> 被当普通字符。</li>
+<li>关键词太宽（如只搜 <code>error</code>），结果噪声太大。</li>
+<li>只搜到一行就下结论，没有回看上下文（建议配合 <code>-C</code>）。</li>
+<li>不加 <code>-n</code>，后续定位源日志困难。</li>
+</ol>
+<h3 id="5">5. 一个实战排查套路（建议背下来）</h3>
+<ol>
+<li><code>kubectl get ... | grep ...</code> 先定位对象。</li>
+<li><code>kubectl logs ... | grep -nE "ERROR|FATAL|fail|Failed"</code> 找错误行。</li>
+<li>回原日志用 <code>grep -n -C 3</code> 看前后文。</li>
+<li>再按业务关键词（如 <code>create table</code>/<code>delete table</code>）串流程。</li>
+</ol>
+<h2 id="grep_1">grep 实战过程（结合本次排查）</h2>
+<h3 id="_3">目标</h3>
+<p>在大量日志中快速回答三个问题：</p>
+<ol>
+<li>哪个对象在报错？</li>
+<li>报错发生在流程哪一步？</li>
+<li>是配置问题还是运行时偶发问题？</li>
+</ol>
+<h3 id="_4">实战步骤</h3>
+<ol>
+<li>先从对象名过滤。</li>
+<li><code>kubectl get pods -n feature-worker | grep zhengzhanpeng.1029-ops-swift.default--broker</code></li>
+<li>
+<p>作用：先缩小到异常实例。</p>
+</li>
+<li>
+<p>再抓错误级别关键词。</p>
+</li>
+<li><code>grep -nE "ERROR|FATAL|fail|Failed" ./logs/swift/swift.log</code></li>
+<li>
+<p>作用：快速拿到候选失败点。</p>
+</li>
+<li>
+<p>用业务关键词串时序。</p>
+</li>
+<li><code>grep -nE "Start to create table|operation: create table|operation: get build Request|operation: get build Response|Failed to generate build task" tianji-ops-controller/logs/tianji-ops-dev.log</code></li>
+<li>
+<p>作用：判断失败前后发生了什么。</p>
+</li>
+<li>
+<p>针对删除链路单独筛。</p>
+</li>
+<li><code>grep -nEi "delete table|drop table|drop build|delete topic|Failed to .*table|ERROR" tianji-ops-controller/logs/tianji-ops-dev.log</code></li>
+<li>
+<p>作用：验证 delete table 的失败点是否可重复。</p>
+</li>
+<li>
+<p>精准到单实例关键词。</p>
+</li>
+<li><code>grep -n "broker_2_0" ./logs/swift/swift.log</code></li>
+<li>作用：避免被其他 broker 日志干扰。</li>
+</ol>
+<h3 id="_5">实战结论</h3>
+<ul>
+<li><code>grep</code> 的核心不是“多写几个命令”，而是先定关键词集合，再按对象名和阶段词逐步收敛。</li>
+<li>最有效组合：<code>对象过滤 -&gt; 错误过滤 -&gt; 业务阶段过滤 -&gt; 上下文复核</code>。</li>
+</ul>
+<h2 id="sed">文本流编辑（sed）</h2>
+<h3 id="1">1. 基本语法与常用参数</h3>
+<div class="highlight"><pre><span></span><code>sed<span class="w"> </span><span class="o">[</span>选项<span class="o">]</span><span class="w"> </span><span class="s1">&#39;脚本&#39;</span><span class="w"> </span>文件
+
+-n<span class="w">   </span><span class="c1"># 关闭默认输出，配合 p 只打印命中内容</span>
+-E<span class="w">   </span><span class="c1"># 启用扩展正则（支持 +、|、()）</span>
+-i<span class="w">   </span><span class="c1"># 原地修改文件（建议先备份）</span>
+</code></pre></div>
+<h3 id="2-s">2. 替换（s 命令）</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 每行只替换第一个 old</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 每行全部替换</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 只替换每行第 2 个匹配</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/2&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 只替换第 3 行</span>
+sed<span class="w"> </span><span class="s1">&#39;3s/old/new/&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 只替换第 10~30 行</span>
+sed<span class="w"> </span><span class="s1">&#39;10,30s/old/new/g&#39;</span><span class="w"> </span>app.log
+</code></pre></div>
+<h3 id="3">3. 按条件匹配后再操作</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 仅对包含 ERROR 的行做替换</span>
+sed<span class="w"> </span><span class="s1">&#39;/ERROR/s/timeout/retry/g&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 打印从 start 到 end 的区间</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/start/,/end/p&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 仅打印匹配 create table 的行</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/create table/p&#39;</span><span class="w"> </span>app.log
+</code></pre></div>
+<h3 id="4_1">4. 删除与提取</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 删除第 5 行</span>
+sed<span class="w"> </span><span class="s1">&#39;5d&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 删除第 10~20 行</span>
+sed<span class="w"> </span><span class="s1">&#39;10,20d&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 删除空行</span>
+sed<span class="w"> </span><span class="s1">&#39;/^$/d&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 只看前 20 行</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1,20p&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 只看最后 20 行（和 tail 等价思路不同，需先拿总行数）</span>
+<span class="c1"># 更推荐：tail -n 20 app.log</span>
+</code></pre></div>
+<h3 id="5_1">5. 插入与追加</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 在第 3 行前插入</span>
+sed<span class="w"> </span><span class="s1">&#39;3i\\# inserted line&#39;</span><span class="w"> </span>conf.txt
+
+<span class="c1"># 在第 3 行后追加</span>
+sed<span class="w"> </span><span class="s1">&#39;3a\\# appended line&#39;</span><span class="w"> </span>conf.txt
+</code></pre></div>
+<h3 id="6">6. 原地修改（谨慎）</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 直接改文件</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/127.0.0.1/0.0.0.0/g&#39;</span><span class="w"> </span>config.ini
+
+<span class="c1"># 先备份再改（推荐）</span>
+sed<span class="w"> </span>-i.bak<span class="w"> </span><span class="s1">&#39;s/127.0.0.1/0.0.0.0/g&#39;</span><span class="w"> </span>config.ini
+</code></pre></div>
+<h3 id="7">7. 与日志排查组合（实用模板）</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 提取 ERROR 附近 3 行（grep 更强，这里演示 sed 范围能力）</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/ERROR/,+3p&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 只看某时间段日志（按固定前缀）</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/2026-03-04 10:00/,/2026-03-04 10:30/p&#39;</span><span class="w"> </span>app.log
+
+<span class="c1"># 先 grep 再 sed 精简字段</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="w"> </span>app.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;s/^([0-9]+):/line=\\1 /&#39;</span>
+</code></pre></div>
+<h3 id="8">8. 常见坑</h3>
+<ol>
+<li><code>sed -i</code> 会直接改原文件，生产环境先 <code>-i.bak</code>。</li>
+<li>正则分组与 <code>+</code> 需要 <code>-E</code>，否则匹配结果可能不符合预期。</li>
+<li>路径或替换文本含 <code>/</code> 时，建议改分隔符：<code>sed 's#/old/path#/new/path#g'</code>。</li>
+<li><code>grep -n</code> 的行号是原文件行号；如果是 <code>tail | grep -n</code>，行号是管道结果内的相对行号。</li>
+</ol>
 
   <br>
     
