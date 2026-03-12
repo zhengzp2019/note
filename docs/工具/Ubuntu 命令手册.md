@@ -37,6 +37,65 @@ wget
 ls -l | wc -l
 ```
 
+## 进程查看（ps）
+
+```shell
+## 查看所有进程（BSD 风格，常用）
+ps aux
+
+## 查看所有进程（System V 风格，常用）
+ps -ef
+
+## 查看当前用户进程
+ps -u $USER
+
+## 按进程名搜索
+ps -ef | grep nginx
+
+## 搜索进程时排除 grep 自身
+ps -ef | grep nginx | grep -v grep
+
+## 查看指定 PID 的详细信息
+ps -fp 1234
+
+## 查看指定进程的父子关系
+ps -ef --forest
+
+## 自定义显示列：PID、父 PID、CPU、内存、启动时间、命令
+ps -eo pid,ppid,%cpu,%mem,lstart,cmd
+
+## 按 CPU 使用率排序（高到低）
+ps -eo pid,ppid,%cpu,%mem,cmd --sort=-%cpu
+
+## 按内存使用率排序（高到低）
+ps -eo pid,ppid,%mem,%cpu,cmd --sort=-%mem
+```
+
+### ps 常用参数说明
+
+1. `a`：显示所有终端上的进程。
+2. `u`：以面向用户的格式显示，包含 CPU、内存等信息。
+3. `x`：显示没有控制终端的进程。
+4. `-e`：显示所有进程。
+5. `-f`：完整格式显示，包含 `UID/PID/PPID/CMD` 等字段。
+6. `-p`：按 PID 查询指定进程。
+7. `-u`：按用户查询进程。
+8. `-o`：自定义输出字段。
+9. `--sort`：按指定字段排序。
+
+### 常见组合
+
+```shell
+# 查看 Java 进程
+ps -ef | grep java | grep -v grep
+
+# 找出最耗 CPU 的前 10 个进程
+ps -eo pid,%cpu,cmd --sort=-%cpu | head
+
+# 找出最耗内存的前 10 个进程
+ps -eo pid,%mem,cmd --sort=-%mem | head
+```
+
 ## 文本搜索（grep）
 
 ```shell
@@ -58,7 +117,13 @@ grep -rl "spring.datasource" .
 ## 反向匹配（排除包含关键字的行）
 grep -v "^#" /etc/ssh/sshd_config
 
-## 显示匹配行前后文
+## 显示匹配行后 n 行
+grep -n -A 3 "Exception" app.log
+
+## 显示匹配行前 n 行
+grep -n -B 3 "Exception" app.log
+
+## 显示匹配行前后 n 行
 grep -n -C 2 "Exception" app.log
 
 ## 正则匹配
@@ -127,6 +192,10 @@ h j k l      # 左 下 上 右
 w / b        # 下一个词 / 上一个词
 0 / $        # 行首 / 行尾
 gg / G       # 文件开头 / 文件末尾
+Ctrl+u       # 向上翻半页
+Ctrl+b       # 向上翻一整页
+Ctrl+d       # 向下翻半页
+Ctrl+f       # 向下翻一整页
 
 ## 常用编辑
 yy           # 复制当前行
