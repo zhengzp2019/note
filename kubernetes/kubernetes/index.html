@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     
-    <link rel="canonical" href="https://zhengzp2019.github.io/note/java/kubernetes/">
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/kubernetes/kubernetes/">
     <link rel="shortcut icon" href="../../img/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <title>Kubernetes 学习 - mydocs</title>
@@ -35,7 +35,8 @@
         var pageToc = [
           {title: "Kubernetes \u5b66\u4e60", url: "#_top", children: [
               {title: "\u5e38\u7528\u547d\u4ee4", url: "#_1" },
-              {title: "\u95ee\u9898\u6392\u67e5\u8bb0\u5f55", url: "#_2" },
+              {title: "\u8d44\u6e90\u4f5c\u7528\u57df\u8bf4\u660e", url: "#_2" },
+              {title: "\u95ee\u9898\u6392\u67e5\u8bb0\u5f55", url: "#_3" },
               {title: "Swift Broker CrashLoop \u6392\u67e5\u547d\u4ee4\uff08\u5b66\u4e60\u7248\uff09", url: "#swift-broker-crashloop" },
               {title: "Swift Broker CrashLoop \u5b9e\u6218\u8fc7\u7a0b\uff08\u65f6\u95f4\u7ebf\uff09", url: "#swift-broker-crashloop_1" },
           ]},
@@ -64,20 +65,20 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
   <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
     
     <div class="wm-article-nav pull-right">
-      <a href="../maven/" class="btn btn-xs btn-default pull-right">
+      <a href="../%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="btn btn-xs btn-default pull-right">
         Next
         <i class="fa fa-chevron-right" aria-hidden="true"></i>
       </a>
-      <a href="../maven/" class="btn btn-xs btn-link">
-        Maven 常用编译命令
+      <a href="../%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="btn btn-xs btn-link">
+        常用命令
       </a>
     </div>
     
     <div class="wm-article-nav">
-      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-left">
+      <a href="../kubeonfig/" class="btn btn-xs btn-default pull-left">
         <i class="fa fa-chevron-left" aria-hidden="true"></i>
-        Previous</a><a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
-        java8 新特性
+        Previous</a><a href="../kubeonfig/" class="btn btn-xs btn-link">
+        kubeconfig
       </a>
     </div>
     
@@ -148,17 +149,22 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 </ul>
 <p>示例：
 <code>kubectl logs -f nginx-6f7d7cbdc8-abcde -n default</code></p>
-<h2 id="_2">问题排查记录</h2>
-<h3 id="_3">场景</h3>
+<h2 id="_2">资源作用域说明</h2>
+<p>在 Kubernetes 中，资源按照作用域可分为命名空间级资源与集群级资源。该分类直接决定了资源的寻址方式、权限边界与运维操作路径。</p>
+<p>命名空间级资源是指资源实例隶属于某一具体命名空间，其名称仅在所在命名空间内需要保持唯一。对该类资源执行查询、变更与删除操作时，应显式指定命名空间。典型示例包括 Pod、Deployment、Service、ConfigMap、Secret 等；在本项目中，ShardGroup、CarbonJob、WorkerNode 亦按命名空间级资源处理。</p>
+<p>集群级资源是指资源实例不隶属于任何命名空间，其生命周期与可见范围覆盖整个集群。对该类资源进行操作时通常不携带命名空间参数。典型示例包括 Namespace、Node、CustomResourceDefinition（CRD）等。</p>
+<p>在工程实践中，建议先明确目标资源的作用域，再编写或调用客户端逻辑，以避免因作用域判断错误导致的资源未命中、权限异常或误操作。</p>
+<h2 id="_3">问题排查记录</h2>
+<h3 id="_4">场景</h3>
 <p><code>feature-master</code> 命名空间中 <code>ops-swift</code> Pod 持续 <code>CrashLoopBackOff</code>，容器退出码 <code>255</code>，无法就绪。</p>
-<h3 id="_4">排查思路</h3>
+<h3 id="_5">排查思路</h3>
 <ol>
 <li>先排除基础问题：调度、镜像拉取、资源不足（OOM）。</li>
 <li>再定位应用级失败：优先看 <code>describe</code> 的 <code>Last State</code> 与 <code>Events</code>，再看 <code>logs --previous</code>。</li>
 <li>由于标准输出信息过少，进入同镜像调试环境读取落盘日志（<code>logs/swift/swift.log</code>）。</li>
 <li>最后回溯到配置生成链路，确认模板变量来源与最终渲染结果。</li>
 </ol>
-<h3 id="_5">关键指令</h3>
+<h3 id="_6">关键指令</h3>
 <ol>
 <li>
 <p>查看 Pod 状态
@@ -187,14 +193,14 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
    <code>/ha3_install/usr/local/bin/fs_util cat zfs://.../ops-swift/appmaster/config/&lt;version&gt;/swift.conf</code></p>
 </li>
 </ol>
-<h3 id="_6">结果分析</h3>
+<h3 id="_7">结果分析</h3>
 <ol>
 <li>调度、拉镜像、资源均正常，问题不在基础设施层。</li>
 <li><code>swift.log</code> 明确报错：<code>UserName can't be empty.</code>，导致 <code>swift_admin</code> 初始化失败并退出。</li>
 <li>线上配置文件 <code>swift.conf</code> 实际内容为 <code>user_name=</code>（空值），与报错一致。</li>
 <li>根因是模板变量 <code>default_variables.user</code> 未被正确填充，最终通过在 Java 侧补齐初始化兜底解决。</li>
 </ol>
-<h3 id="_7">经验总结</h3>
+<h3 id="_8">经验总结</h3>
 <ol>
 <li><code>CrashLoopBackOff</code> 首先看 <code>--previous</code>，能最快拿到上一次退出前的关键信息。</li>
 <li>标准输出不足时，要看容器内业务日志文件，而不只看 <code>kubectl logs</code>。</li>
@@ -279,12 +285,12 @@ kubectl<span class="w"> </span>get<span class="w"> </span>&lt;obj&gt;<span class
 kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-n<span class="w"> </span>&lt;ns&gt;<span class="w"> </span>&lt;admin-pod&gt;<span class="w"> </span>--<span class="w"> </span>sh<span class="w"> </span>-lc<span class="w"> </span><span class="s2">&quot;fs_util cat &lt;config-path&gt;&quot;</span>
 </code></pre></div>
 <h2 id="swift-broker-crashloop_1">Swift Broker CrashLoop 实战过程（时间线）</h2>
-<h3 id="_8">场景</h3>
+<h3 id="_9">场景</h3>
 <ul>
 <li>现象：<code>feature-worker</code> 下 <code>zhengzhanpeng.1029-ops-swift.default--broker-*</code> 持续 <code>CrashLoopBackOff/Error</code>。</li>
 <li>同时观察到：<code>john-ops-swift.default--broker-*</code> 也在运行，存在资源/配置冲突风险。</li>
 </ul>
-<h3 id="_9">排查步骤</h3>
+<h3 id="_10">排查步骤</h3>
 <ol>
 <li>先看状态范围。</li>
 <li>执行：<code>kubectl get pods -n feature-master</code>、<code>kubectl get pods -n feature-worker</code>。</li>
@@ -325,7 +331,7 @@ kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </sp
 <li>执行：删除冲突 <code>carbonjob</code>（如 <code>john-ops-swift</code>），再看 pod 状态。</li>
 <li>结论：冲突实例清理后，重新观察 broker 拉起结果。</li>
 </ol>
-<h3 id="_10">这次实战得到的固定流程</h3>
+<h3 id="_11">这次实战得到的固定流程</h3>
 <ol>
 <li><code>get</code> 定位范围。</li>
 <li><code>describe + logs --previous</code> 锁定失败点。</li>
@@ -345,20 +351,20 @@ kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </sp
   <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
     
     <div class="wm-article-nav pull-right">
-      <a href="../maven/" class="btn btn-xs btn-default pull-right">
+      <a href="../%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="btn btn-xs btn-default pull-right">
         Next
         <i class="fa fa-chevron-right" aria-hidden="true"></i>
       </a>
-      <a href="../maven/" class="btn btn-xs btn-link">
-        Maven 常用编译命令
+      <a href="../%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="btn btn-xs btn-link">
+        常用命令
       </a>
     </div>
     
     <div class="wm-article-nav">
-      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-left">
+      <a href="../kubeonfig/" class="btn btn-xs btn-default pull-left">
         <i class="fa fa-chevron-left" aria-hidden="true"></i>
-        Previous</a><a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
-        java8 新特性
+        Previous</a><a href="../kubeonfig/" class="btn btn-xs btn-link">
+        kubeconfig
       </a>
     </div>
     
@@ -369,7 +375,7 @@ kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </sp
 
 <footer class="container-fluid wm-page-content">
       <p>
-        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java/kubernetes.md">Edit on note</a>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/kubernetes/kubernetes.md">Edit on note</a>
       </p>
   <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
 </footer>

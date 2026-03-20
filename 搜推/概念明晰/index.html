@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/%E6%90%9C%E6%8E%A8/%E6%A6%82%E5%BF%B5%E6%98%8E%E6%99%B0/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>概念明晰 - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u6982\u5ff5\u660e\u6670", url: "#_top", children: [
+              {title: "\u7d22\u5f15", url: "#_2" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-link">
+        Mybatis collection使用
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../%E5%A4%A9%E7%8E%91ops%E5%90%8E%E7%AB%AF%E5%88%86%E4%BA%AB/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../%E5%A4%A9%E7%8E%91ops%E5%90%8E%E7%AB%AF%E5%88%86%E4%BA%AB/" class="btn btn-xs btn-link">
+        天玑ops后端分享
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="_1">概念明晰</h1>
+<h2 id="_2">索引</h2>
+<p>本文将索引相关概念分为三层：</p>
+<ol>
+<li>索引基础对象：<code>document</code>、<code>docid</code>、<code>field</code>、<code>term</code>、<code>posting list</code></li>
+<li>字段级索引类型：<code>PRIMARY_KEY64</code>、<code>ATTRIBUTE</code>、<code>TEXT</code>、<code>SUMMARY</code></li>
+<li>索引组织形式：<code>KV</code>、<code>KKV</code>、<code>正排索引</code>、<code>倒排索引</code></li>
+</ol>
+<p>解释了“数据是什么”“字段如何使用”“索引如何组织”三个层面区分开来。</p>
+<h3 id="_3">索引基础对象</h3>
+<h4 id="document">Document</h4>
+<p><code>document</code> 是索引系统中的最小内容单元，即一条可被检索、排序和展示的数据记录。</p>
+<p>在不同业务场景中，document 对应的对象有所不同：</p>
+<ol>
+<li>电商搜索中通常是一件商品</li>
+<li>内容搜索中通常是一篇文章、一条帖子或一个视频</li>
+<li>本地生活场景中通常是一个商家或一个 POI</li>
+</ol>
+<p>一个 document 通常由“唯一标识 + 多个字段”组成，例如：</p>
+<div class="highlight"><pre><span></span><code>docid=1001
+title=&quot;小米手机充电器&quot;
+category=&quot;数码&quot;
+price=39
+brand=&quot;小米&quot;
+publish_time=&quot;2026-03-01&quot;
+</code></pre></div>
+<h4 id="docid">docid</h4>
+<p><code>docid</code> 是 document 在索引系统内部使用的唯一标识。</p>
+<p>它与业务主键并不一定完全一致：</p>
+<ol>
+<li>业务侧可能命名为 <code>item_id</code>、<code>article_id</code>、<code>poi_id</code></li>
+<li>索引系统通常会将其映射为内部 <code>docid</code>，以便于压缩存储、排序和检索</li>
+</ol>
+<p>正排索引通常按 <code>docid</code> 读取字段，倒排索引中的 posting list 也通常记录
+<code>docid</code>。</p>
+<h4 id="field">Field</h4>
+<p><code>field</code> 是 document 的字段，是构成 document 的属性。</p>
+<p>field 可以从两个维度进行理解：</p>
+<ol>
+<li>业务语义维度：字段本身表示什么业务含义，例如 <code>title</code>、<code>price</code>、
+   <code>category</code>、<code>publish_time</code></li>
+<li>索引语义维度：字段进入索引系统后以何种方式被加工、存储和使用，例如
+   <code>PRIMARY_KEY64</code>、<code>ATTRIBUTE</code>、<code>TEXT</code>、<code>SUMMARY</code></li>
+</ol>
+<p>前者回答“这个字段是什么”，后者回答“这个字段在索引系统中承担什么职责”。</p>
+<p>常见的 field 业务类型包括：</p>
+<ol>
+<li>文本字段：<code>title</code>、<code>content</code></li>
+<li>数值字段：<code>price</code>、<code>score</code></li>
+<li>枚举或标签字段：<code>category</code>、<code>brand</code>、<code>tags</code></li>
+<li>时间字段：<code>publish_time</code></li>
+<li>复杂字段：embedding、多值属性、扩展 JSON</li>
+</ol>
+<p>同一个 field 可以同时对应多种索引类型。例如，<code>title</code> 可以同时作为 <code>TEXT</code>
+字段参与全文检索，也可以作为 <code>SUMMARY</code> 字段用于结果展示。因此，索引类型并非
+field 的天然属性，而是系统赋予 field 的使用方式。</p>
+<h4 id="term">Term</h4>
+<p><code>term</code> 是倒排索引中的最小检索单元。</p>
+<p>它通常来自以下来源：</p>
+<ol>
+<li>文本分词结果，例如 <code>title="小米 手机 充电器"</code> 会切出 <code>小米</code>、<code>手机</code>、
+   <code>充电器</code></li>
+<li>枚举字段值，例如 <code>brand=小米</code>、<code>category=耳机</code></li>
+<li>归一化或改写后的词项，例如同义词、拼写纠错后的词</li>
+</ol>
+<p>query 进入搜索系统后，通常也会先被处理为多个 term，再据此查询倒排索引。</p>
+<h4 id="posting-list">Posting List</h4>
+<p><code>posting list</code> 是某个 term 对应的命中文档列表，即“该 term 出现于哪些
+document 中”。</p>
+<p>最简单的 posting list 仅包含 <code>docid</code>，但真实系统中通常还会附带更多信息：</p>
+<ol>
+<li><code>tf(term frequency)</code>：词频，即该 term 在 document 中出现的次数</li>
+<li><code>position</code>：位置，即该 term 在 document 中出现的位置</li>
+<li><code>payload/weight</code>：额外权重或业务附加信息</li>
+</ol>
+<p>例如：</p>
+<div class="highlight"><pre><span></span><code>term = 手机
+posting list = [1, 2]
+</code></pre></div>
+<p>这表示 <code>docid=1</code> 和 <code>docid=2</code> 这两个 document 均包含 <code>手机</code> 这一 term。</p>
+<h3 id="_4">字段级索引类型</h3>
+<p><code>PRIMARY_KEY64</code>、<code>ATTRIBUTE</code>、<code>TEXT</code>、<code>SUMMARY</code> 等类型，描述的是 field
+在索引系统中的用途，而不是 field 的数据来源。它们并不表示字段来自数据库、
+消息队列或接口，而是表示该字段进入索引系统后将被如何处理。</p>
+<h4 id="field_1">Field 与索引类型的关系</h4>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+<th>关注点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>field</code></td>
+<td>document 中的业务字段</td>
+<td>该字段表达什么业务含义</td>
+</tr>
+<tr>
+<td><code>PRIMARY_KEY64</code></td>
+<td>主键索引类型</td>
+<td>是否支持按主键快速定位 document</td>
+</tr>
+<tr>
+<td><code>ATTRIBUTE</code></td>
+<td>属性索引类型</td>
+<td>是否支持排序、过滤、聚合和按 <code>docid</code> 取值</td>
+</tr>
+<tr>
+<td><code>TEXT</code></td>
+<td>文本索引类型</td>
+<td>是否支持分词、倒排召回和全文检索</td>
+</tr>
+<tr>
+<td><code>SUMMARY</code></td>
+<td>摘要存储类型</td>
+<td>是否支持结果展示时直接返回字段内容</td>
+</tr>
+</tbody>
+</table>
+<p>可见，field 表示“业务数据本身”，索引类型表示“field 在索引系统中以什么方式被
+加工、存储和使用”。</p>
+<h4 id="primary_key64">PRIMARY_KEY64</h4>
+<p><code>PRIMARY_KEY64</code> 表示 64 位主键索引，通常用于按主键直接定位 document。</p>
+<p>典型用途：</p>
+<ol>
+<li>已知业务主键时快速定位 document</li>
+<li>增量更新或删除时查找目标 document</li>
+<li>主键去重、存在性判断</li>
+</ol>
+<p>它更接近“主键查找能力”，而不是全文检索能力。</p>
+<h4 id="attribute">ATTRIBUTE</h4>
+<p><code>ATTRIBUTE</code> 表示属性索引或属性存储，通常用于保存结构化字段，以支持按
+<code>docid</code> 读取字段值。</p>
+<p>典型用途：</p>
+<ol>
+<li>排序取值，例如 <code>price</code>、<code>score</code>、<code>hits</code></li>
+<li>过滤判断，例如 <code>category</code>、<code>status</code>、<code>publish_time</code></li>
+<li>聚合统计，例如按类目、品牌、时间分桶统计</li>
+</ol>
+<p>它更接近结构化字段的读取与计算能力。</p>
+<h4 id="text">TEXT</h4>
+<p><code>TEXT</code> 表示文本索引类型，通常会对字段进行分词并建立倒排索引。</p>
+<p>典型用途：</p>
+<ol>
+<li>标题检索</li>
+<li>正文检索</li>
+<li>相关性打分、短语匹配、召回</li>
+</ol>
+<p>它是全文搜索最核心的字段级索引类型之一。</p>
+<h4 id="summary">SUMMARY</h4>
+<p><code>SUMMARY</code> 表示摘要存储类型，通常用于在查询命中后直接返回展示字段。</p>
+<p>典型用途：</p>
+<ol>
+<li>返回标题、摘要、作者、时间等展示内容</li>
+<li>生成搜索结果页中的展示信息</li>
+<li>与高亮、snippet 拼接配合使用</li>
+</ol>
+<p>它更偏向展示返回，而不是召回或排序。</p>
+<h4 id="schema">基于 Schema 的示例说明</h4>
+<p>以下示例来自
+<code>/Users/zhengzhanpeng.1029/code/java/tianji-ops/tianji-ops-controller/src/main/resources/schema/in0_schema.json</code>。</p>
+<p>该 schema 中定义了如下字段：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;columns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;title&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TEXT&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;subject&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TEXT&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UINT32&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hits&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UINT32&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;createtime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UINT64&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>这说明：</p>
+<ol>
+<li><code>title</code>、<code>subject</code> 是业务上的文本字段</li>
+<li><code>id</code> 是业务主键字段</li>
+<li><code>hits</code> 是数值字段，可用于热度排序</li>
+<li><code>createtime</code> 是时间字段，可用于时效性排序或过滤</li>
+</ol>
+<p>而在 <code>indexes</code> 配置中，这些 field 又被赋予了不同的索引用途：</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PRIMARY_KEY64&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ATTRIBUTE&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hits&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ATTRIBUTE&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;createtime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ATTRIBUTE&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;title&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TEXT&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;subject&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TEXT&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;summary&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;index_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SUMMARY&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p>可以据此作如下理解：</p>
+<table>
+<thead>
+<tr>
+<th>field</th>
+<th>业务含义</th>
+<th>索引类型</th>
+<th>索引用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>文档唯一标识</td>
+<td><code>PRIMARY_KEY64</code></td>
+<td>按主键快速定位 document</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>文档唯一标识</td>
+<td><code>ATTRIBUTE</code></td>
+<td>按 <code>docid</code> 读取该字段，供返回或处理使用</td>
+</tr>
+<tr>
+<td><code>hits</code></td>
+<td>热度值</td>
+<td><code>ATTRIBUTE</code></td>
+<td>用于排序、过滤或聚合</td>
+</tr>
+<tr>
+<td><code>createtime</code></td>
+<td>创建时间</td>
+<td><code>ATTRIBUTE</code></td>
+<td>用于时效性排序与时间过滤</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>标题文本</td>
+<td><code>TEXT</code></td>
+<td>分词后参与全文检索</td>
+</tr>
+<tr>
+<td><code>subject</code></td>
+<td>正文或主题文本</td>
+<td><code>TEXT</code></td>
+<td>分词后参与全文检索</td>
+</tr>
+<tr>
+<td><code>title/subject/id/hits/createtime</code></td>
+<td>展示所需字段</td>
+<td><code>SUMMARY</code></td>
+<td>查询命中后直接返回展示内容</td>
+</tr>
+</tbody>
+</table>
+<p>从该例可以看出，同一个 field 可以对应多个索引类型。例如 <code>id</code> 同时被配置为
+<code>PRIMARY_KEY64</code> 和 <code>ATTRIBUTE</code>，分别承担“主键定位”与“属性取值”两种职责。
+同样，<code>title</code> 既可以作为 <code>TEXT</code> 字段参与检索，也可以出现在 <code>SUMMARY</code> 中用于
+展示。</p>
+<h3 id="_5">索引组织形式</h3>
+<p>这一层关注的是索引整体如何组织数据，以及查询请求如何访问数据。它与前述
+“字段级索引类型”并非同一概念。</p>
+<h4 id="kvkey-value">KV（Key-Value）</h4>
+<p>KV 的数据模型是 <code>key -&gt; value</code>，典型能力是按 <code>key</code> 点查。</p>
+<p>常见使用场景：</p>
+<ol>
+<li>用户画像或用户配置：<code>uid -&gt; {age, gender, tags...}</code></li>
+<li>物料基础信息：<code>docid -&gt; {title, author, category...}</code></li>
+<li>在线特征或中间结果缓存：<code>(uid, docid) -&gt; score/features</code></li>
+</ol>
+<p>典型工程关注点：</p>
+<ol>
+<li>key 的基数与热点</li>
+<li>value 的大小与更新频率</li>
+<li>是否需要 scan 能力</li>
+</ol>
+<h4 id="kkvkey-key-value">KKV（Key-Key-Value）</h4>
+<p>KKV 可以理解为“一级主键 + 二级主键”的聚合结构：<code>pkey -&gt; (skey -&gt; value)</code>。</p>
+<p>常见使用场景：</p>
+<ol>
+<li>用户行为序列：<code>uid(pkey) -&gt; ts(skey) -&gt; event(value)</code></li>
+<li>同一实体的多版本或多维明细：<code>item_id(pkey) -&gt; variant_id(skey) -&gt; variant(value)</code></li>
+<li>session 事件流：<code>session_id(pkey) -&gt; seq(skey) -&gt; event(value)</code></li>
+</ol>
+<p>典型访问方式：</p>
+<ol>
+<li><code>pkey</code> 点查取一组数据</li>
+<li><code>pkey + skey</code> 精确获取单条数据</li>
+<li><code>pkey</code> 下按 <code>skey</code> 范围扫描或取 TopN</li>
+</ol>
+<p>典型工程关注点：</p>
+<ol>
+<li>控制单个 <code>pkey</code> 下的数据量，避免大 key</li>
+<li>保证 <code>skey</code> 具备明确的排序语义</li>
+<li>根据场景设计 TTL、时间回收与冷热分层</li>
+</ol>
+<h4 id="forward-index">正排索引（Forward Index）</h4>
+<p>正排索引的核心组织方式是：<code>docid -&gt; 字段值</code>，即“已知文档，反查该文档有哪些
+字段内容”。</p>
+<p>在搜推系统中，正排索引通常承担“取数”职责，而不是“找候选”职责。召回、粗排、
+精排拿到一批 <code>docid</code> 后，需要通过正排索引快速读取这些文档的字段值，用于：</p>
+<ol>
+<li>结果展示：标题、摘要、封面、作者、价格、类目等</li>
+<li>排序特征：质量分、热度、CTR 预估特征、时效性特征等</li>
+<li>过滤判断：状态位、上下架标记、内容安全标记、库存等</li>
+</ol>
+<p>它的特点是：</p>
+<ol>
+<li>按 <code>docid</code> 取字段高效</li>
+<li>适合批量读取一批文档的列值</li>
+<li>不适合直接回答“哪些 document 包含 term A”这类问题</li>
+</ol>
+<h4 id="inverted-index">倒排索引（Inverted Index）</h4>
+<p>倒排索引的核心组织方式是：<code>term -&gt; posting list</code>，即“已知一个词，反查哪些
+document 包含这个词”。</p>
+<p>在搜索链路中，倒排索引通常承担“召回”和“过滤”职责。query 经过分词、归一化、
+同义词改写后，会拿每个 term 去查 posting list，再做交集、并集、打分或截断，
+得到候选 document 集合。</p>
+<p>常见能力：</p>
+<ol>
+<li>全文检索：标题、正文、评论等文本字段检索</li>
+<li>属性过滤：品牌=小米、类目=耳机、城市=上海</li>
+<li>短语或邻近匹配：依赖 position 信息判断词序和距离</li>
+</ol>
+<p>它的特点是：</p>
+<ol>
+<li>擅长从海量 document 中快速筛出候选</li>
+<li>适合多条件检索与布尔过滤</li>
+<li>写入、合并、压缩通常比正排索引更复杂</li>
+</ol>
+<h3 id="_6">查询流程示例</h3>
+<p>下面以一个简单示例说明“倒排召回 + 正排取数”的配合方式。</p>
+<p>假设有 3 篇 document，只看两个字段：<code>title</code> 与 <code>price</code>。</p>
+<div class="highlight"><pre><span></span><code>docid=1: title=&quot;小米 手机 充电器&quot;, price=39
+docid=2: title=&quot;苹果 手机 充电线&quot;, price=79
+docid=3: title=&quot;小米 耳机&quot;, price=199
+</code></pre></div>
+<h4 id="_7">正排视角</h4>
+<p>正排索引可表示为：</p>
+<div class="highlight"><pre><span></span><code>1 -&gt; {title: &quot;小米 手机 充电器&quot;, price: 39}
+2 -&gt; {title: &quot;苹果 手机 充电线&quot;, price: 79}
+3 -&gt; {title: &quot;小米 耳机&quot;, price: 199}
+</code></pre></div>
+<p>当系统已经知道 <code>docid=2</code> 时，可以直接读取其 <code>title</code> 与 <code>price</code>，用于结果展示
+或排序特征计算。</p>
+<h4 id="_8">倒排视角</h4>
+<p>若对 <code>title</code> 字段分词，可得到：</p>
+<div class="highlight"><pre><span></span><code>doc 1 分词: [小米, 手机, 充电器]
+doc 2 分词: [苹果, 手机, 充电线]
+doc 3 分词: [小米, 耳机]
+</code></pre></div>
+<p>据此建立倒排索引：</p>
+<div class="highlight"><pre><span></span><code>小米 -&gt; [1, 3]
+苹果 -&gt; [2]
+手机 -&gt; [1, 2]
+充电器 -&gt; [1]
+充电线 -&gt; [2]
+耳机 -&gt; [3]
+</code></pre></div>
+<h4 id="_9">一次查询如何执行</h4>
+<p>查询 <code>q="手机 充电"</code>，分词后得到 <code>[手机, 充电]</code>。</p>
+<ol>
+<li>用倒排索引查每个 term 的候选 document：</li>
+<li><code>手机 -&gt; [1, 2]</code></li>
+<li><code>充电 -&gt; []</code></li>
+<li>根据检索策略对候选集合做交并处理：</li>
+<li>若采用 OR 策略，则候选集合为 <code>[1, 2]</code></li>
+<li>拿到候选 <code>docid</code> 后，再通过正排索引读取展示字段：</li>
+<li>doc 1: title="小米 手机 充电器", price=39</li>
+<li>doc 2: title="苹果 手机 充电线", price=79</li>
+</ol>
+<p>因此，常见链路可以概括为：</p>
+<ol>
+<li>倒排索引负责根据 query 找到候选 <code>docid</code></li>
+<li>正排索引负责根据 <code>docid</code> 读取字段，用于排序和展示</li>
+</ol>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../../%E6%95%B0%E6%8D%AE%E5%BA%93/Mybatis%20collection%E4%BD%BF%E7%94%A8/" class="btn btn-xs btn-link">
+        Mybatis collection使用
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../%E5%A4%A9%E7%8E%91ops%E5%90%8E%E7%AB%AF%E5%88%86%E4%BA%AB/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../%E5%A4%A9%E7%8E%91ops%E5%90%8E%E7%AB%AF%E5%88%86%E4%BA%AB/" class="btn btn-xs btn-link">
+        天玑ops后端分享
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/搜推/概念明晰.md">Edit on note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>

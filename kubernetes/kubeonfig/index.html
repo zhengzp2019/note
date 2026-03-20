@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/kubernetes/kubeonfig/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>kubeconfig - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "kubeconfig", url: "#_top", children: [
+              {title: "kubeconfig \u4ecb\u7ecd", url: "#kubeconfig_1" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../kubernetes/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../kubernetes/" class="btn btn-xs btn-link">
+        Kubernetes 学习
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../java/%E9%87%8D%E8%AF%95%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../java/%E9%87%8D%E8%AF%95%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-link">
+        重试组件
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="kubeconfig">kubeconfig</h1>
+<h2 id="kubeconfig_1">kubeconfig 介绍</h2>
+<p><code>kubeconfig</code> 是 Kubernetes 客户端配置文件，用来告诉 <code>kubectl</code> 或程序：</p>
+<ol>
+<li>连接哪个集群（API Server 地址）。</li>
+<li>用什么身份认证（token/证书）。</li>
+<li>默认使用哪个上下文（cluster + user + namespace 组合）。</li>
+</ol>
+<p>加载方式：</p>
+<ol>
+<li>显式参数 <code>--kubeconfig &lt;path&gt;</code>。</li>
+<li>环境变量 <code>KUBECONFIG</code>。</li>
+<li>默认路径 <code>~/.kube/config</code>。</li>
+</ol>
+<h3 id="_1">示例</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"> </span><span class="c1"># kubeconfig 文件版本，当前通用为 v1</span>
+<span class="nt">clusters</span><span class="p">:</span><span class="w"> </span><span class="c1"># 可连接的集群列表</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">cluster</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">insecure-skip-tls-verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># 是否跳过服务端 TLS 证书校验；true 方便但有安全风险</span>
+<span class="w">      </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://api.lfbox02.jdos.jd.local:6443</span><span class="w"> </span><span class="c1"># Kubernetes API Server 地址</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-auth</span><span class="w"> </span><span class="c1"># 该集群条目的逻辑名称（供 context 引用）</span>
+
+<span class="nt">contexts</span><span class="p">:</span><span class="w"> </span><span class="c1"># 上下文列表：把 cluster + user (+ namespace) 绑定在一起</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">context</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cluster</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-auth</span><span class="w"> </span><span class="c1"># 引用上面 clusters.name=cluster-auth</span>
+<span class="w">      </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">feature-master</span><span class="w"> </span><span class="c1"># 默认命名空间；不加 -n 时默认落在这里</span>
+<span class="w">      </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubecfg</span><span class="w"> </span><span class="c1"># 引用 users.name=kubecfg</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-auth</span><span class="w"> </span><span class="c1"># context 的名称</span>
+
+<span class="nt">current-context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cluster-auth</span><span class="w"> </span><span class="c1"># 当前默认使用的 context</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Config</span><span class="w"> </span><span class="c1"># 对象类型，固定为 Config</span>
+
+<span class="nt">users</span><span class="p">:</span><span class="w"> </span><span class="c1"># 用户认证信息列表</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubecfg</span><span class="w"> </span><span class="c1"># 用户条目的逻辑名称（供 context 引用）</span>
+<span class="w">    </span><span class="nt">user</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;redacted&gt;</span><span class="w"> </span><span class="c1"># Bearer Token，用于向 API Server 认证</span>
+</code></pre></div>
+<h3 id="_2">使用</h3>
+<ol>
+<li>客户端（kubectl 或程序）读取 kubeconfig。</li>
+<li>用其中的 server + token/证书 请求 API Server。</li>
+<li>API Server先做认证（你是谁）。</li>
+<li>再做 RBAC 鉴权（你能对哪个 namespace 的哪些资源做什么动作）。</li>
+<li>通过才允许操作资源，调用Kubernetes API</li>
+</ol>
+<h3 id="kubectl">kubectl查找过程</h3>
+<ol>
+<li><code>current-context</code> 表示当前默认使用哪个 <code>context</code>。</li>
+<li><code>context.cluster</code> 的值会按名称去匹配 <code>clusters[].name</code>，从而找到实际要连接的 <code>server</code>。</li>
+<li><code>context.user</code> 的值会按名称去匹配 <code>users[].name</code>，从而找到实际要使用的 <code>token</code> 或证书。</li>
+<li><code>context.namespace</code> 表示默认命名空间。</li>
+<li>所以 <code>kubectl</code> 或程序的查找过程就是：先读 <code>current-context</code>，再找到对应的 <code>context</code>，最后根据其中的 <code>cluster</code> 和 <code>user</code> 名称，定位到真正的 <code>server</code>、认证信息和默认 <code>namespace</code>。</li>
+</ol>
+<h3 id="_3">与物理机房的关系</h3>
+<ol>
+<li><code>server</code> 指向哪个 API Server，就连接到哪个 Kubernetes 集群入口。</li>
+<li>是否落到某个机房/节点，不由 kubeconfig 直接决定，而由调度策略（如 <code>nodeSelector/affinity</code>）和集群拓扑决定。</li>
+</ol>
+<h3 id="_4">安全建议</h3>
+<ol>
+<li><code>token</code> 属于高敏感凭证，建议不要明文入库。</li>
+<li>建议改用密文管理（Secret 管理系统、CI 注入）并定期轮转。</li>
+<li>生产环境尽量不要长期使用 <code>insecure-skip-tls-verify: true</code>。</li>
+</ol>
+<h3 id="kubeconfig-c2">kubeconfig 在 c2 场景下的时序图</h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant C2 as c2进程(Pod内)
+    participant KC as /etc/kubeconfig/kubeconfig
+    participant API as kube-apiserver
+    participant ETCD as etcd
+    participant SCH as kube-scheduler
+    participant KLET as kubelet(Node)
+    participant RT as container runtime
+
+    Note over C2,KC: Pod启动时，Secret挂载为kubeconfig文件
+    C2-&gt;&gt;KC: 读取server/token/current-context
+    C2-&gt;&gt;API: 发起HTTPS请求(携带token)
+    API-&gt;&gt;API: 认证/鉴权/准入
+    API-&gt;&gt;ETCD: 写入或读取资源状态
+    API--&gt;&gt;C2: 返回结果
+
+    Note over API,SCH: 若创建了新Pod
+    API-&gt;&gt;SCH: 待调度Pod
+    SCH-&gt;&gt;API: 绑定到某个Node
+    API-&gt;&gt;KLET: 下发Pod期望状态
+    KLET-&gt;&gt;RT: 拉镜像并启动容器
+    RT--&gt;&gt;KLET: 容器运行中
+</code></pre></div>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../kubernetes/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../kubernetes/" class="btn btn-xs btn-link">
+        Kubernetes 学习
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../../java/%E9%87%8D%E8%AF%95%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../../java/%E9%87%8D%E8%AF%95%E7%BB%84%E4%BB%B6/" class="btn btn-xs btn-link">
+        重试组件
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/kubernetes/kubeonfig.md">Edit on note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>
