@@ -217,7 +217,85 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
 在企业项目中，`createTime`、`updateTime`、`createUser`、`updateUser` 一类字段通常具有稳定的填充规则。若每次都在业务代码中手工赋值，不仅重复，而且容易遗漏。通过自动填充机制，可以将这类通用逻辑统一收敛到框架层处理。
 
-## 8. 常见实践建议（有 MyBatis 经验的人重点看）
+## 8. 常用注解补充
+
+除了前面示例中已经出现的 `@TableName`、`@TableId`、`@TableField`、`@TableLogic` 之外，MyBatis-Plus 里还有一些注解在实际项目中也很常见。
+
+### 8.1 `@TableField("db_column")`
+
+用于指定实体字段对应的数据库列名，适合 Java 属性名与数据库字段名不一致的场景。
+
+```java
+@TableField("user_name")
+private String userName;
+```
+
+如果项目命名规范不完全统一，这个注解会非常常用。
+
+### 8.2 `@TableField(exist = false)`
+
+用于声明某个属性不是数据库表字段，不参与数据库映射。
+
+```java
+@TableField(exist = false)
+private String roleName;
+```
+
+这一类字段通常用于页面展示、临时计算结果，或者承接额外查询出的信息。这个注解在列表页 DTO 风格不够明确的项目里尤其常见。
+
+### 8.3 `@Version`
+
+用于乐观锁控制。
+
+```java
+@Version
+private Integer version;
+```
+
+当多个请求同时修改同一条记录时，乐观锁可以避免后一次更新无意覆盖前一次更新的结果。在并发修改场景中，这个注解很有价值。
+
+### 8.4 `@EnumValue`
+
+用于标记枚举中实际要持久化到数据库的字段。
+
+```java
+public enum UserStatus {
+    ENABLED(1),
+    DISABLED(0);
+
+    @EnumValue
+    private final int code;
+
+    UserStatus(int code) {
+        this.code = code;
+    }
+}
+```
+
+如果项目里状态字段较多，常见于配合枚举使用，而不是在代码里到处散落魔法值。
+
+### 8.5 `@TableField(typeHandler = ...)`
+
+用于指定字段的类型处理器，常见于 JSON、数组、复杂对象等场景。
+
+```java
+@TableField(typeHandler = JacksonTypeHandler.class)
+private ExtraInfo extraInfo;
+```
+
+当数据库字段中存放的是 JSON 内容，而 Java 中希望直接映射成对象时，这个注解就会非常有用。
+
+### 8.6 `@Mapper`
+
+这不是 MyBatis-Plus 独有的注解，而是 MyBatis 中非常常见的注解。若不使用 `@MapperScan`，通常就需要在每个 Mapper 接口上单独标注 `@Mapper`。
+
+```java
+@Mapper
+public interface UserMapper extends BaseMapper<User> {
+}
+```
+
+## 9. 常见实践建议
 
 引入 MyBatis-Plus 之后，一个常见误区是试图将所有数据库访问都改写为 Wrapper 风格。这样的做法并不总是合理。更稳妥的实践通常是：
 
@@ -229,7 +307,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
 从团队协作的角度看，最值得建立的并不是“所有人都统一使用 MyBatis-Plus”，而是“哪些场景适合 MyBatis-Plus，哪些场景仍应坚持手写 SQL”的共识。
 
-## 9. 学习路径（建议 1~2 天）
+## 10. 学习路径（建议 1~2 天）
 
 如果读者已经具备 MyBatis 基础，那么 MyBatis-Plus 的入门成本其实并不高。一个相对务实的学习路径如下：
 
