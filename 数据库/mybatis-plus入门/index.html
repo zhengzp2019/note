@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/%E6%95%B0%E6%8D%AE%E5%BA%93/mybatis-plus%E5%85%A5%E9%97%A8/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>mybatis plus入门 - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "mybatis plus\u5165\u95e8", url: "#_top", children: [
+              {title: "1. MyBatis \u4e0e MyBatis-Plus \u7684\u5173\u7cfb", url: "#1-mybatis-mybatis-plus" },
+              {title: "2. \u4f60\u4f1a\u7acb\u5373\u611f\u53d7\u5230\u7684\u6536\u76ca", url: "#2" },
+              {title: "3. \u5feb\u901f\u5f00\u59cb\uff08Spring Boot\uff09", url: "#3-spring-boot" },
+              {title: "4. \u7b2c\u4e00\u4e2a\u53ef\u8fd0\u884c CRUD", url: "#4-crud" },
+              {title: "5. \u6761\u4ef6\u67e5\u8be2\uff1a\u4ece XML \u8f6c\u5411 Wrapper", url: "#5-xml-wrapper" },
+              {title: "6. \u5206\u9875\u67e5\u8be2\uff08MP \u5b98\u65b9\u63d2\u4ef6\uff09", url: "#6-mp" },
+              {title: "7. \u81ea\u52a8\u586b\u5145\uff08createTime/updateTime\uff09", url: "#7-createtimeupdatetime" },
+              {title: "8. \u5e38\u7528\u6ce8\u89e3\u8865\u5145", url: "#8" },
+              {title: "9. \u5e38\u89c1\u5b9e\u8df5\u5efa\u8bae", url: "#9" },
+              {title: "10. \u5b66\u4e60\u8def\u5f84\uff08\u5efa\u8bae 1~2 \u5929\uff09", url: "#10-12" },
+              {title: "\u53c2\u8003", url: "#_1" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../mybatis/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../mybatis/" class="btn btn-xs btn-link">
+        mybatis
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-link">
+        Sql 扩散问题
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="mybatis-plus">mybatis plus入门</h1>
+<p>本文面向已经具备 MyBatis 使用经验的 Java 工程师，目标并非从零讲解持久层基础，而是帮助读者以较低的认知成本完成从 MyBatis 到 MyBatis-Plus 的入门过渡。全文将围绕实际开发中最常见的几个问题展开：为何要引入 MyBatis-Plus、其核心能力体现在哪里、在 Spring Boot 项目中应当如何快速落地，以及在已有 MyBatis 基础之上应当如何取舍与使用。</p>
+<h2 id="1-mybatis-mybatis-plus">1. MyBatis 与 MyBatis-Plus 的关系</h2>
+<ul>
+<li>MyBatis 是一套 SQL 映射框架，开发者通常通过 XML 或注解手写 SQL，因此拥有较高的灵活性与可控性。</li>
+<li>MyBatis-Plus 是构建在 MyBatis 之上的增强工具，并非替代品。它在保留 MyBatis 原有能力的前提下，提供了通用 CRUD、条件构造器、分页插件、代码生成等能力，用以减少重复性开发工作。</li>
+<li>因而，从工程实践的角度看，<code>MyBatis 并不会因为 MyBatis-Plus 的引入而失去价值</code>。更准确地说，MyBatis-Plus 所解决的是大量样板化、重复性的单表操作问题，而复杂 SQL 的表达能力依然建立在 MyBatis 之上。</li>
+</ul>
+<h2 id="2">2. 你会立即感受到的收益</h2>
+<p>在具备 MyBatis 使用经验之后，初次接触 MyBatis-Plus 时，最直观的收益通常体现在以下几个方面：</p>
+<ul>
+<li>对于单表 CRUD 场景，通常无需再编写 XML，即可完成大部分基础操作。</li>
+<li>在条件查询方面，可以使用 <code>LambdaQueryWrapper</code> 组织查询条件，从而降低硬编码字段名带来的维护成本。</li>
+<li>分页能力由官方插件直接提供，不再像传统 MyBatis 项目那样必须额外引入 PageHelper 一类的插件。</li>
+<li>对逻辑删除、自动填充、乐观锁等企业项目中的常见能力，MyBatis-Plus 已经提供了较为成熟的支持。</li>
+</ul>
+<p>如果用一句话概括其价值，那么可以理解为：<code>它并未改变 MyBatis 的本质，只是让常规数据库访问层的开发效率显著提升。</code></p>
+<h2 id="3-spring-boot">3. 快速开始（Spring Boot）</h2>
+<h3 id="31">3.1 引入依赖</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>com.baomidou<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>mybatis-plus-spring-boot3-starter<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;version&gt;</span>3.5.7<span class="nt">&lt;/version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependency&gt;</span>
+
+<span class="w">    </span><span class="cm">&lt;!-- 数据库驱动示例：MySQL --&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>com.mysql<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>mysql-connector-j<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></div>
+<blockquote>
+<p>Spring Boot 2.x 通常使用 <code>mybatis-plus-boot-starter</code>。</p>
+</blockquote>
+<h3 id="32-applicationyml">3.2 application.yml 最小配置</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:mysql://127.0.0.1:3306/demo?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">root</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">root</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">com.mysql.cj.jdbc.Driver</span>
+
+<span class="nt">mybatis-plus</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">configuration</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">map-underscore-to-camel-case</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">log-impl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.apache.ibatis.logging.stdout.StdOutImpl</span>
+</code></pre></div>
+<h3 id="33-mapper">3.3 启动类扫描 Mapper</h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@MapperScan</span><span class="p">(</span><span class="s">&quot;com.example.demo.mapper&quot;</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoApplication</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">DemoApplication</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>至此，一个最小可运行的接入环境便已经具备。接下来只需要定义实体、Mapper 和基础配置，即可开始使用 MyBatis-Plus 所提供的通用能力。</p>
+<h2 id="4-crud">4. 第一个可运行 CRUD</h2>
+<h3 id="41">4.1 建表（示例）</h3>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">user</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">age</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">email</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+<span class="w">    </span><span class="n">create_time</span><span class="w"> </span><span class="n">DATETIME</span><span class="p">,</span>
+<span class="w">    </span><span class="n">update_time</span><span class="w"> </span><span class="n">DATETIME</span><span class="p">,</span>
+<span class="w">    </span><span class="n">deleted</span><span class="w"> </span><span class="n">TINYINT</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span>
+<span class="p">);</span>
+</code></pre></div>
+<h3 id="42">4.2 实体类</h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@Data</span>
+<span class="nd">@TableName</span><span class="p">(</span><span class="s">&quot;user&quot;</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">User</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@TableId</span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IdType</span><span class="p">.</span><span class="na">AUTO</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@TableField</span><span class="p">(</span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FieldFill</span><span class="p">.</span><span class="na">INSERT</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="w"> </span><span class="n">createTime</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@TableField</span><span class="p">(</span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FieldFill</span><span class="p">.</span><span class="na">INSERT_UPDATE</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="w"> </span><span class="n">updateTime</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@TableLogic</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">deleted</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="43-mapper">4.3 Mapper 接口</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">UserMapper</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BaseMapper</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>在传统 MyBatis 中，开发者往往需要自行定义接口方法，并在 XML 中编写对应 SQL。而在 MyBatis-Plus 中，只要让 Mapper 继承 <code>BaseMapper&lt;T&gt;</code>，便可以直接获得一组常用的基础方法，例如：</p>
+<ul>
+<li><code>insert</code></li>
+<li><code>deleteById</code></li>
+<li><code>updateById</code></li>
+<li><code>selectById</code></li>
+<li><code>selectList</code></li>
+</ul>
+<h3 id="44-service">4.4 Service 层（推荐）</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">UserService</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">IService</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nd">@Service</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserServiceImpl</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">ServiceImpl</span><span class="o">&lt;</span><span class="n">UserMapper</span><span class="p">,</span><span class="w"> </span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserService</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>在服务层中，若继续使用 <code>IService + ServiceImpl</code> 这一套通用抽象，还可以进一步获得 <code>save</code>、<code>list</code>、<code>page</code> 等方法。对于常见业务系统中的基础数据维护模块而言，这种写法通常已经足够高效。</p>
+<h2 id="5-xml-wrapper">5. 条件查询：从 XML 转向 Wrapper</h2>
+<div class="highlight"><pre><span></span><code><span class="n">LambdaQueryWrapper</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">qw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Wrappers</span><span class="p">.</span><span class="na">lambdaQuery</span><span class="p">();</span>
+<span class="n">qw</span><span class="p">.</span><span class="na">like</span><span class="p">(</span><span class="n">User</span><span class="p">::</span><span class="n">getName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zhang&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="na">ge</span><span class="p">(</span><span class="n">User</span><span class="p">::</span><span class="n">getAge</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="na">orderByDesc</span><span class="p">(</span><span class="n">User</span><span class="p">::</span><span class="n">getId</span><span class="p">);</span>
+
+<span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userMapper</span><span class="p">.</span><span class="na">selectList</span><span class="p">(</span><span class="n">qw</span><span class="p">);</span>
+</code></pre></div>
+<p>对于有 MyBatis 使用经验的开发者而言，MyBatis-Plus 最需要适应的，往往不是 CRUD，而是 Wrapper 的使用方式。它本质上是一种以 Java API 组织查询条件的方式，可用于替代相当一部分简单 XML 动态 SQL。</p>
+<p>常见方法包括：</p>
+<ul>
+<li><code>eq/ne/gt/ge/lt/le</code></li>
+<li><code>like/likeLeft/likeRight</code></li>
+<li><code>in/notIn</code></li>
+<li><code>between</code></li>
+<li><code>orderByAsc/orderByDesc</code></li>
+</ul>
+<p>相较于直接书写字符串字段名，<code>User::getName</code> 这一类 Lambda 写法的优势在于：当实体字段发生重构时，编译器即可帮助我们发现问题，从而降低因字段名变更而引发的隐性错误。</p>
+<h2 id="6-mp">6. 分页查询（MP 官方插件）</h2>
+<h3 id="61">6.1 分页插件配置</h3>
+<div class="highlight"><pre><span></span><code><span class="nd">@Configuration</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MybatisPlusConfig</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Bean</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">MybatisPlusInterceptor</span><span class="w"> </span><span class="nf">mybatisPlusInterceptor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">MybatisPlusInterceptor</span><span class="w"> </span><span class="n">interceptor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MybatisPlusInterceptor</span><span class="p">();</span>
+<span class="w">        </span><span class="n">interceptor</span><span class="p">.</span><span class="na">addInnerInterceptor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">PaginationInnerInterceptor</span><span class="p">(</span><span class="n">DbType</span><span class="p">.</span><span class="na">MYSQL</span><span class="p">));</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">interceptor</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="62">6.2 使用分页</h3>
+<div class="highlight"><pre><span></span><code><span class="n">Page</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Page</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="c1">// 第1页，每页10条</span>
+<span class="n">LambdaQueryWrapper</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">qw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Wrappers</span><span class="p">.</span><span class="na">lambdaQuery</span><span class="p">(</span><span class="n">User</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">ge</span><span class="p">(</span><span class="n">User</span><span class="p">::</span><span class="n">getAge</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">orderByDesc</span><span class="p">(</span><span class="n">User</span><span class="p">::</span><span class="n">getId</span><span class="p">);</span>
+
+<span class="n">Page</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userMapper</span><span class="p">.</span><span class="na">selectPage</span><span class="p">(</span><span class="n">page</span><span class="p">,</span><span class="w"> </span><span class="n">qw</span><span class="p">);</span>
+
+<span class="kt">long</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">getTotal</span><span class="p">();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">records</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">getRecords</span><span class="p">();</span>
+</code></pre></div>
+<p>分页是 MyBatis-Plus 在实际项目中极高频的一项能力。与 MyBatis 生态中常见的第三方分页方案相比，官方分页插件的接入方式更加直接，且与 Wrapper、Service 体系结合得更自然。</p>
+<h2 id="7-createtimeupdatetime">7. 自动填充（createTime/updateTime）</h2>
+<div class="highlight"><pre><span></span><code><span class="nd">@Component</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MyMetaObjectHandler</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MetaObjectHandler</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">insertFill</span><span class="p">(</span><span class="n">MetaObject</span><span class="w"> </span><span class="n">metaObject</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">strictInsertFill</span><span class="p">(</span><span class="n">metaObject</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;createTime&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">());</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">strictInsertFill</span><span class="p">(</span><span class="n">metaObject</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;updateTime&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateFill</span><span class="p">(</span><span class="n">MetaObject</span><span class="w"> </span><span class="n">metaObject</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">strictUpdateFill</span><span class="p">(</span><span class="n">metaObject</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;updateTime&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>在企业项目中，<code>createTime</code>、<code>updateTime</code>、<code>createUser</code>、<code>updateUser</code> 一类字段通常具有稳定的填充规则。若每次都在业务代码中手工赋值，不仅重复，而且容易遗漏。通过自动填充机制，可以将这类通用逻辑统一收敛到框架层处理。</p>
+<h2 id="8">8. 常用注解补充</h2>
+<p>除了前面示例中已经出现的 <code>@TableName</code>、<code>@TableId</code>、<code>@TableField</code>、<code>@TableLogic</code> 之外，MyBatis-Plus 里还有一些注解在实际项目中也很常见。</p>
+<h3 id="81-tablefielddb_column">8.1 <code>@TableField("db_column")</code></h3>
+<p>用于指定实体字段对应的数据库列名，适合 Java 属性名与数据库字段名不一致的场景。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@TableField</span><span class="p">(</span><span class="s">&quot;user_name&quot;</span><span class="p">)</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">userName</span><span class="p">;</span>
+</code></pre></div>
+<p>如果项目命名规范不完全统一，这个注解会非常常用。</p>
+<h3 id="82-tablefieldexist-false">8.2 <code>@TableField(exist = false)</code></h3>
+<p>用于声明某个属性不是数据库表字段，不参与数据库映射。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@TableField</span><span class="p">(</span><span class="n">exist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">roleName</span><span class="p">;</span>
+</code></pre></div>
+<p>这一类字段通常用于页面展示、临时计算结果，或者承接额外查询出的信息。这个注解在列表页 DTO 风格不够明确的项目里尤其常见。</p>
+<h3 id="83-version">8.3 <code>@Version</code></h3>
+<p>用于乐观锁控制。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Version</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">version</span><span class="p">;</span>
+</code></pre></div>
+<p>当多个请求同时修改同一条记录时，乐观锁可以避免后一次更新无意覆盖前一次更新的结果。在并发修改场景中，这个注解很有价值。</p>
+<h3 id="84-enumvalue">8.4 <code>@EnumValue</code></h3>
+<p>用于标记枚举中实际要持久化到数据库的字段。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">UserStatus</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ENABLED</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">DISABLED</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nd">@EnumValue</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">code</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UserStatus</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">code</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">code</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>如果项目里状态字段较多，常见于配合枚举使用，而不是在代码里到处散落魔法值。</p>
+<h3 id="85-tablefieldtypehandler">8.5 <code>@TableField(typeHandler = ...)</code></h3>
+<p>用于指定字段的类型处理器，常见于 JSON、数组、复杂对象等场景。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@TableField</span><span class="p">(</span><span class="n">typeHandler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JacksonTypeHandler</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">ExtraInfo</span><span class="w"> </span><span class="n">extraInfo</span><span class="p">;</span>
+</code></pre></div>
+<p>当数据库字段中存放的是 JSON 内容，而 Java 中希望直接映射成对象时，这个注解就会非常有用。</p>
+<h3 id="86-mapper">8.6 <code>@Mapper</code></h3>
+<p>这不是 MyBatis-Plus 独有的注解，而是 MyBatis 中非常常见的注解。若不使用 <code>@MapperScan</code>，通常就需要在每个 Mapper 接口上单独标注 <code>@Mapper</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Mapper</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">UserMapper</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BaseMapper</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="9">9. 常见实践建议</h2>
+<p>引入 MyBatis-Plus 之后，一个常见误区是试图将所有数据库访问都改写为 Wrapper 风格。这样的做法并不总是合理。更稳妥的实践通常是：</p>
+<ul>
+<li>对于简单的单表增删改查，优先使用 MyBatis-Plus，以充分发挥其开发效率优势。</li>
+<li>对于复杂联表、复杂统计、较强业务语义的 SQL，继续采用自定义 SQL（XML 或注解）往往更加清晰，也更便于后期排查与优化。</li>
+<li>避免滥用 <code>selectList(null)</code> 这一类“全表查询”方式，在线上环境中应当对查询条件与返回规模保持明确控制。</li>
+<li>在 Wrapper 中尽量避免前端参数直接参与字段拼接，尤其是排序字段，通常应采用白名单方式进行约束。</li>
+<li>分页插件应确认只注册一次，以免出现插件冲突或行为异常的问题。</li>
+</ul>
+<p>从团队协作的角度看，最值得建立的并不是“所有人都统一使用 MyBatis-Plus”，而是“哪些场景适合 MyBatis-Plus，哪些场景仍应坚持手写 SQL”的共识。</p>
+<h2 id="10-12">10. 学习路径（建议 1~2 天）</h2>
+<p>如果读者已经具备 MyBatis 基础，那么 MyBatis-Plus 的入门成本其实并不高。一个相对务实的学习路径如下：</p>
+<ol>
+<li>先跑通本文中的最小示例，理解实体、Mapper、分页插件之间的基本协作方式。</li>
+<li>从现有项目中挑选一个结构简单的 MyBatis Mapper，尝试改写为 <code>BaseMapper</code> + Wrapper 的形式。</li>
+<li>在此基础上补充逻辑删除、自动填充、乐观锁等常见能力，并通过少量单元测试验证行为是否符合预期。</li>
+<li>最后结合团队实际情况，沉淀出一份简单规范，明确“哪些 SQL 建议继续手写，哪些场景交由 MyBatis-Plus 承担”。</li>
+</ol>
+<p>完成上述过程之后，通常已经能够胜任大多数业务系统中的 MyBatis-Plus 开发工作。</p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://baomidou.com/">https://baomidou.com/</a></li>
+<li><a href="https://baomidou.com/pages/24112f/">https://baomidou.com/pages/24112f/</a></li>
+<li><a href="https://baomidou.com/pages/2976a3/">https://baomidou.com/pages/2976a3/</a></li>
+</ul>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../mybatis/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../mybatis/" class="btn btn-xs btn-link">
+        mybatis
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../Sql%20%E6%89%A9%E6%95%A3%E9%97%AE%E9%A2%98/" class="btn btn-xs btn-link">
+        Sql 扩散问题
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/数据库/mybatis-plus入门.md">Edit on note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>
