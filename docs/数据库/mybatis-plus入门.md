@@ -53,9 +53,23 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis-plus:
+  # 指定 MyBatis Mapper XML 文件的位置，项目中如果仍然保留自定义 SQL 的 XML 写法，通常需要配置这一项
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 指定实体类别名所在包，配置后在 XML 中可以直接使用类名而不必写全限定类名
+  type-aliases-package: com.jd.tianji.ops.model.entity
   configuration:
+    # 开启下划线转驼峰映射
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 指定 MyBatis 日志实现，这里表示将 SQL 日志输出到 Slf4j，便于统一接入项目日志体系
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      # 指定逻辑删除字段名，MyBatis-Plus 会基于这个字段自动处理“删除”与“查询未删除数据”的逻辑
+      logic-delete-field: deleted
+      # 指定逻辑删除后的字段值，例如删除时会把 deleted 更新为 1
+      logic-delete-value: 1
+      # 指定未删除时的字段值，查询时 MyBatis-Plus 会自动按这个值过滤数据
+      logic-not-delete-value: 0
 ```
 
 ### 3.3 启动类扫描 Mapper
