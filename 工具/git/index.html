@@ -11,7 +11,7 @@
     <link rel="canonical" href="https://zhengzp2019.github.io/note/%E5%B7%A5%E5%85%B7/git/">
     <link rel="shortcut icon" href="../../img/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <title>git - mydocs</title>
+    <title>git常用指令 - mydocs</title>
     <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
     <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
     <link href="../../css/base.css" rel="stylesheet">
@@ -33,9 +33,15 @@
       var is_top_frame = false;
         
         var pageToc = [
-          {title: "git", url: "#_top", children: [
-              {title: "\u4ece\u7d22\u5f15\u6570\u4e2d\u5220\u9664\u6587\u4ef6", url: "#_1" },
-              {title: "\u5b9a\u4f4d\u6bcf\u884c\u6700\u540e\u4fee\u6539\u4eba\uff08git blame\uff09", url: "#git-blame" },
+          {title: "git\u5e38\u7528\u6307\u4ee4", url: "#_top", children: [
+              {title: "Git \u4e09\u533a", url: "#git_1" },
+              {title: "merge", url: "#merge" },
+              {title: "rebase\uff08\u6362\u57fa\uff09", url: "#rebase" },
+              {title: "cherry-pick", url: "#cherry-pick" },
+              {title: "cherry-pick\u3001merge \u4e0e rebase \u7684\u533a\u522b", url: "#cherry-pickmerge-rebase" },
+              {title: "restore", url: "#restore" },
+              {title: "rm\uff08\u4ece\u7d22\u5f15\u6811\u4e2d\u5220\u9664\u6587\u4ef6\uff09", url: "#rm" },
+              {title: "blame\uff08\u5b9a\u4f4d\u6bcf\u884c\u6700\u540e\u4fee\u6539\u4eba\uff09", url: "#blame" },
           ]},
         ];
 
@@ -83,14 +89,299 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 
     
 
-    <h1 id="git">git</h1>
+    <h1 id="git">git常用指令</h1>
+<h2 id="git_1">Git 三区</h2>
+<p>理解 Git 命令之前，先区分 Git 中最常见的三个区域：工作区、暂存区与本地仓库。许多看似相近的命令，本质上是在不同区域之间移动或恢复内容。</p>
+<h3 id="_1">工作区</h3>
+<p>工作区是当前实际可见、可编辑的项目目录，即开发者正在直接修改文件的区域。凡是尚未执行 <code>git add</code> 的改动，均只存在于工作区。</p>
+<h3 id="_2">暂存区</h3>
+<p>暂存区也称为索引区（index），用于保存“准备纳入下一次提交”的文件状态。执行 <code>git add &lt;file&gt;</code> 后，Git 会将该文件当前内容写入暂存区，但此时尚未形成正式提交。</p>
+<h3 id="_3">本地仓库</h3>
+<p>本地仓库存放于 <code>.git</code> 目录中，用于保存提交历史。执行 <code>git commit</code> 后，暂存区中的内容会被写入本地仓库，形成一个新的提交记录。</p>
+<h3 id="_4">三者关系</h3>
+<p>可用下列流程理解三者之间的关系：</p>
+<div class="highlight"><pre><span></span><code>工作区 --git add--&gt; 暂存区 --git commit--&gt; 本地仓库 --git push--&gt; 远程仓库
+</code></pre></div>
+<p>其中，远程仓库不属于本地三区的一部分，但在日常协作中通常会与本地仓库一并讨论。</p>
+<h3 id="_5">一个简单例子</h3>
+<p>假设你修改了 <code>App.java</code> 与 <code>UserService.java</code>，但只执行了：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>App.java
+</code></pre></div>
+<p>此时：</p>
+<ol>
+<li><code>App.java</code> 已进入暂存区。</li>
+<li><code>UserService.java</code> 仍只存在于工作区。</li>
+<li>本地仓库依然保持上一次提交的状态。</li>
+</ol>
+<p>若随后执行：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: update app logic&quot;</span>
+</code></pre></div>
+<p>则本次提交只会包含 <code>App.java</code> 的改动，而 <code>UserService.java</code> 仍未被提交。</p>
+<h2 id="merge">merge</h2>
+<p><code>git merge</code> 用于将某个分支的整体变更并入当前分支。执行 <code>merge</code> 时，Git 会以两个分支的共同祖先为基础，计算差异并完成合并。若当前分支与目标分支均有新增提交，Git 通常会生成一次新的合并提交，以记录两条历史链在此处汇合。</p>
+<h3 id="_6">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 将指定分支合并到当前分支</span>
+git<span class="w"> </span>merge<span class="w"> </span>&lt;branch_name&gt;
+
+<span class="c1"># 创建合并提交，即使可以快进</span>
+git<span class="w"> </span>merge<span class="w"> </span>--no-ff<span class="w"> </span>&lt;branch_name&gt;
+</code></pre></div>
+<h3 id="_7">特点说明</h3>
+<ol>
+<li><code>merge</code> 的核心在于保留分支关系，适合表达“该功能由独立分支完成后再并入主线”这一事实。</li>
+<li>若当前分支没有额外提交，Git 可能直接执行快进合并，此时不会生成新的合并提交。</li>
+<li>若两个分支修改了相同代码区域，也可能产生冲突，处理方式与其他 Git 合并操作一致。</li>
+</ol>
+<h3 id="_8">使用建议</h3>
+<ol>
+<li>需要完整保留开发轨迹时，应优先考虑 <code>merge</code>。</li>
+<li>团队协作分支、发布分支或主干分支，通常更适合使用 <code>merge</code>，以减少历史改写带来的同步成本。</li>
+<li>若希望在历史中明确保留“功能分支合入”这一事件，可使用 <code>--no-ff</code>。</li>
+</ol>
+<h2 id="rebase">rebase（换基）</h2>
+<p><code>git rebase</code> 用于将当前分支的一组提交，改为基于另一个提交或分支重新播放。其结果并非简单合并，而是以新的基底重新生成一条提交链，因此提交顺序可能保持不变，但提交 ID 会发生变化。</p>
+<h3 id="_9">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 将当前分支变基到指定分支之上</span>
+git<span class="w"> </span>rebase<span class="w"> </span>&lt;branch_name&gt;
+
+<span class="c1"># 指定新的基底，重放某一段提交</span>
+git<span class="w"> </span>rebase<span class="w"> </span>--onto<span class="w"> </span>&lt;new_base&gt;<span class="w"> </span>&lt;old_base&gt;<span class="w"> </span>&lt;branch_name&gt;
+</code></pre></div>
+<p>例如：</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>rebase<span class="w"> </span>--onto<span class="w"> </span>HEAD~3<span class="w"> </span>HEAD~2<span class="w"> </span>feature_access_dayu
 </code></pre></div>
-<p><a href="https://chat.qwen.ai/s/634e2064-74b6-48df-b367-ea0deeced80b?fev=0.1.30">https://chat.qwen.ai/s/634e2064-74b6-48df-b367-ea0deeced80b?fev=0.1.30</a></p>
-<h2 id="_1">从索引数中删除文件</h2>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>rm
+<h3 id="_10">特点说明</h3>
+<ol>
+<li><code>rebase</code> 适合在功能分支中整理提交历史，使提交链更加线性、整洁。</li>
+<li>由于其本质是“重新生成提交”，因此会改写历史，不应轻易用于已经被多人共享的公共分支。</li>
+<li>在代码审阅或问题追踪场景中，线性历史通常更易阅读，但也意味着原始分支汇合关系可能不再直观保留。</li>
+</ol>
+<h3 id="_11">使用建议</h3>
+<ol>
+<li>在个人功能分支上同步主干最新变更时，<code>rebase</code> 往往比 <code>merge</code> 更适合。</li>
+<li>在提交合入主干前，若需要压缩、重排或重写提交说明，通常也会配合交互式 <code>rebase</code> 使用。</li>
+<li>若分支已经推送并被他人基于其继续开发，应谨慎执行 <code>rebase</code>，否则后续同步成本会显著增加。</li>
+</ol>
+<h3 id="rebase_1">rebase 交互</h3>
+<p>交互式 <code>rebase</code> 常用于整理提交历史，其典型能力包括压缩提交、调整提交顺序以及重写提交说明。假设当前分支最近三个提交如下：</p>
+<div class="highlight"><pre><span></span><code>a1b2c3d feat: add user dto
+b2c3d4e fix: rename field
+c3d4e5f docs: update api example
 </code></pre></div>
-<h2 id="git-blame">定位每行最后修改人（git blame）</h2>
+<p>若希望对这三个提交进行整理，可执行：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>HEAD~3
+</code></pre></div>
+<p>Git 会打开一个待编辑列表，例如：</p>
+<div class="highlight"><pre><span></span><code>pick a1b2c3d feat: add user dto
+pick b2c3d4e fix: rename field
+pick c3d4e5f docs: update api example
+</code></pre></div>
+<h4 id="_12">压缩提交</h4>
+<p>若第二个提交只是对第一个提交的补充修正，希望将二者合并为一个提交，可改为：</p>
+<div class="highlight"><pre><span></span><code>pick a1b2c3d feat: add user dto
+squash b2c3d4e fix: rename field
+pick c3d4e5f docs: update api example
+</code></pre></div>
+<p>此时 Git 会将第二个提交压缩到第一个提交中，并提示合并提交说明。整理完成后，原先两个零散提交会变成一个新的提交。</p>
+<h4 id="_13">重排提交顺序</h4>
+<p>若希望先提交功能说明文档，再提交字段修正，便可直接调整行顺序：</p>
+<div class="highlight"><pre><span></span><code>pick a1b2c3d feat: add user dto
+pick c3d4e5f docs: update api example
+pick b2c3d4e fix: rename field
+</code></pre></div>
+<p>保存后，Git 会按照新的顺序重新播放这些提交。若提交之间存在依赖关系，重排过程中可能产生冲突，因此仅适用于可安全调整顺序的提交。</p>
+<h4 id="_14">重写提交说明</h4>
+<p>若仅希望修改某个提交的 message，而不改变其内容，可将对应行改为：</p>
+<div class="highlight"><pre><span></span><code>reword a1b2c3d feat: add user dto
+pick b2c3d4e fix: rename field
+pick c3d4e5f docs: update api example
+</code></pre></div>
+<p>保存后，Git 会在重放到该提交时打开提交说明编辑界面，供你将其改写为更准确的描述，例如：</p>
+<div class="highlight"><pre><span></span><code>feat: add user dto and validation constraints
+</code></pre></div>
+<h4 id="_15">解决冲突</h4>
+<p>若在交互式 <code>rebase</code> 过程中出现冲突，应先完成冲突解决，再执行：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>rebase<span class="w"> </span>--continue
+</code></pre></div>
+<p>若希望放弃本次整理过程，可执行：</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>rebase<span class="w"> </span>--abort
+</code></pre></div>
+<h2 id="cherry-pick">cherry-pick</h2>
+<p><code>cherry-pick</code> 用于将一个或多个指定提交的改动，按顺序应用到当前分支。其核心价值在于“选择提交”，而非“合并整个分支”。在多分支协作中，若仅需引入某一项修复、某一段功能提交，或需要将补丁同步至其他分支，<code>cherry-pick</code> 通常比 <code>merge</code> 更精确，也比 <code>rebase</code> 更直接。</p>
+<h3 id="_16">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 将单个提交应用到当前分支</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>&lt;commit_id&gt;
+
+<span class="c1"># 一次应用多个提交</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>&lt;commit_id_1&gt;<span class="w"> </span>&lt;commit_id_2&gt;<span class="w"> </span>&lt;commit_id_3&gt;
+
+<span class="c1"># 应用一段连续提交</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>&lt;start_commit&gt;^..&lt;end_commit&gt;
+</code></pre></div>
+<h3 id="_17">其他用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 应用并提交，但允许编辑提交说明</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>--edit<span class="w"> </span>&lt;commit_id&gt;
+
+<span class="c1"># 将改动应用到工作区和暂存区，不立即生成提交</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>--no-commit<span class="w"> </span>&lt;commit_id&gt;
+</code></pre></div>
+<p>其中，<code>--no-commit</code> 适用于以下场景：</p>
+<ol>
+<li>需要将多个提交整理为一个新的提交。</li>
+<li>需要在应用改动后，进一步删减、补充或调整代码内容。</li>
+<li>不希望保留原有提交边界，仅希望保留最终结果。</li>
+</ol>
+<h3 id="_18">冲突处理</h3>
+<p>当目标分支与待拣选提交修改了相同代码区域时，<code>cherry-pick</code> 可能产生冲突。此时可按以下流程处理：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 解决冲突后，标记为已处理</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+
+<span class="c1"># 继续执行 cherry-pick</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>--continue
+
+<span class="c1"># 放弃本次 cherry-pick</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>--abort
+</code></pre></div>
+<h3 id="_19">使用建议</h3>
+<ol>
+<li><code>cherry-pick</code> 适用于“选择少量提交”的场景，不适用于整体分支合并。</li>
+<li>若某个提交依赖其前序提交，应一并拣选，否则可能出现编译错误或行为不完整。</li>
+<li><code>cherry-pick</code> 会在当前分支生成新的提交，提交内容可以相同，但提交 ID 不会与原分支一致。</li>
+</ol>
+<h2 id="cherry-pickmerge-rebase">cherry-pick、merge 与 rebase 的区别</h2>
+<p><code>cherry-pick</code>、<code>merge</code> 与 <code>rebase</code> 都可用于整合代码，但处理对象、历史表现以及适用场景并不相同。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>cherry-pick</th>
+<th>merge</th>
+<th>rebase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>处理对象</td>
+<td>指定的一个或多个提交</td>
+<td>整个分支的变更集合</td>
+<td>当前分支的一组提交</td>
+</tr>
+<tr>
+<td>核心作用</td>
+<td>将选定提交复制到当前分支</td>
+<td>将一个分支整体并入当前分支</td>
+<td>将当前分支提交改为基于新的基底重新播放</td>
+</tr>
+<tr>
+<td>历史表现</td>
+<td>生成新的提交，保留局部改动</td>
+<td>保留原始分支拓扑，通常形成合并提交</td>
+<td>改写提交历史，使提交链更线性</td>
+</tr>
+<tr>
+<td>提交 ID 是否变化</td>
+<td>会变化</td>
+<td>原有提交通常不变，可能新增 merge commit</td>
+<td>会变化</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>补丁迁移、热修复同步、选择性引入功能</td>
+<td>功能分支整体合并、集成分支收敛</td>
+<td>合并前整理历史、同步最新主干、调整提交基底</td>
+</tr>
+<tr>
+<td>主要优势</td>
+<td>精确、局部、可控</td>
+<td>历史信息完整，分支关系清晰</td>
+<td>历史线性，阅读与追踪更简洁</td>
+</tr>
+<tr>
+<td>主要风险</td>
+<td>若遗漏依赖提交，可能导致功能不完整</td>
+<td>历史可能出现较多合并节点</td>
+<td>会改写历史，不宜随意用于已共享分支</td>
+</tr>
+</tbody>
+</table>
+<p>若需要“只拿部分提交”，应优先考虑 <code>cherry-pick</code>；若需要“整合整个分支”，应优先考虑 <code>merge</code>；若需要“整理历史并重新建立基底”，则应优先考虑 <code>rebase</code>。</p>
+<h2 id="restore">restore</h2>
+<p><code>restore</code> 用于将文件恢复到某个已知状态。其主要用途包括：撤销工作区中的未提交修改、将暂存区中的文件恢复为未暂存状态，以及从指定分支或指定提交中提取某个文件版本。与 <code>cherry-pick</code> 复制“提交”不同，<code>git restore</code> 处理的是“文件内容”。</p>
+<h3 id="_20">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 撤销工作区中某个文件的修改</span>
+git<span class="w"> </span>restore<span class="w"> </span>&lt;file&gt;
+
+<span class="c1"># 一次恢复多个文件</span>
+git<span class="w"> </span>restore<span class="w"> </span>&lt;file_1&gt;<span class="w"> </span>&lt;file_2&gt;
+
+<span class="c1"># 撤销当前目录下全部未提交修改</span>
+git<span class="w"> </span>restore<span class="w"> </span>.
+</code></pre></div>
+<p>上述命令主要影响工作区，适用于“尚未提交，但希望放弃当前修改”的场景。</p>
+<h3 id="_21">撤销暂存</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 将文件从暂存区恢复到未暂存状态</span>
+git<span class="w"> </span>restore<span class="w"> </span>--staged<span class="w"> </span>&lt;file&gt;
+
+<span class="c1"># 同时撤销暂存与工作区修改</span>
+git<span class="w"> </span>restore<span class="w"> </span>--staged<span class="w"> </span>--worktree<span class="w"> </span>&lt;file&gt;
+</code></pre></div>
+<p>其中：</p>
+<ol>
+<li><code>--staged</code> 用于恢复索引区。</li>
+<li><code>--worktree</code> 用于恢复工作区。</li>
+<li>二者同时使用时，相当于同时撤销暂存与本地修改。</li>
+</ol>
+<h3 id="_22">从其他分支或提交恢复文件</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 将指定分支中的文件恢复到当前分支工作区</span>
+git<span class="w"> </span>restore<span class="w"> </span>--source<span class="w"> </span>&lt;branch_name&gt;<span class="w"> </span>--<span class="w"> </span>&lt;file&gt;
+
+<span class="c1"># 将指定提交中的文件恢复到当前分支工作区</span>
+git<span class="w"> </span>restore<span class="w"> </span>--source<span class="w"> </span>&lt;commit_id&gt;<span class="w"> </span>--<span class="w"> </span>&lt;file&gt;
+</code></pre></div>
+<p>这一用法常用于以下场景：</p>
+<ol>
+<li>需要将另一个分支中的单个文件复制到当前分支。</li>
+<li>需要取回某次历史提交中的文件版本。</li>
+<li>不希望合并整条分支历史，仅希望恢复某个文件的内容。</li>
+</ol>
+<h3 id="_23">使用建议</h3>
+<ol>
+<li><code>git restore</code> 更适合文件级恢复，不适合跨分支迁移一组提交。</li>
+<li>若目标是引入某次提交的完整改动，应优先考虑 <code>cherry-pick</code>，而非 <code>restore</code>。</li>
+<li>在执行 <code>git restore .</code> 之前，应确认工作区中不存在仍需保留的未提交修改。</li>
+</ol>
+<h2 id="rm">rm（从索引树中删除文件）</h2>
+<p><code>git rm</code> 用于删除已被 Git 跟踪的文件。与直接执行系统层面的 <code>rm</code> 不同，<code>git rm</code> 不仅会删除工作区中的文件，还会将“该文件已被删除”这一变化写入暂存区，以便在下一次提交中生效。</p>
+<h3 id="_24">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 删除单个文件，并将删除操作加入暂存区</span>
+git<span class="w"> </span>rm<span class="w"> </span>&lt;file&gt;
+
+<span class="c1"># 递归删除目录</span>
+git<span class="w"> </span>rm<span class="w"> </span>-r<span class="w"> </span>&lt;dir&gt;
+
+<span class="c1"># 仅从 Git 跟踪中移除，但保留本地文件</span>
+git<span class="w"> </span>rm<span class="w"> </span>--cached<span class="w"> </span>&lt;file&gt;
+</code></pre></div>
+<h3 id="_25">典型场景</h3>
+<ol>
+<li>需要正式删除某个已纳入版本管理的文件或目录。</li>
+<li>某个文件不应继续被 Git 跟踪，但希望保留本地副本，例如将配置文件加入 <code>.gitignore</code> 之前先取消跟踪。</li>
+<li>需要在一次提交中明确记录“删除文件”这一变更。</li>
+</ol>
+<h3 id="_26">使用说明</h3>
+<ol>
+<li><code>git rm &lt;file&gt;</code> 会同时影响工作区与暂存区，即本地文件会被删除，且删除状态会进入暂存区。</li>
+<li><code>git rm --cached &lt;file&gt;</code> 只会将文件从 Git 跟踪中移除，不会删除工作区中的实际文件。</li>
+<li>删除目录时通常需要配合 <code>-r</code>，否则 Git 不会递归处理其中的文件。</li>
+</ol>
+<h3 id="_27">注意事项</h3>
+<ol>
+<li>若文件内容已有修改，Git 可能拒绝直接执行 <code>git rm</code>，以避免误删未提交内容；此时应先确认是否需要保留改动。</li>
+<li>若确实需要强制删除，可使用 <code>git rm -f &lt;file&gt;</code>，但这一操作应谨慎执行。</li>
+<li>若只是希望删除工作区中的未跟踪文件，<code>git rm</code> 并不适用，这类场景通常应使用 <code>git clean</code>。</li>
+</ol>
+<h2 id="blame">blame（定位每行最后修改人）</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># 查看文件每一行最后一次是谁改的（含提交、作者、时间）</span>
 git<span class="w"> </span>blame<span class="w"> </span>&lt;file&gt;
 
@@ -103,12 +394,12 @@ git<span class="w"> </span>blame<span class="w"> </span>-w<span class="w"> </spa
 <span class="c1"># 显示作者邮箱</span>
 git<span class="w"> </span>blame<span class="w"> </span>-e<span class="w"> </span>&lt;file&gt;
 </code></pre></div>
-<h3 id="_2">常见排查组合</h3>
+<h3 id="_28">常见排查组合</h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># 先定位行，再看对应提交详情</span>
 git<span class="w"> </span>blame<span class="w"> </span>-L<span class="w"> </span><span class="m">120</span>,150<span class="w"> </span>src/main/java/com/example/App.java
 git<span class="w"> </span>show<span class="w"> </span>&lt;commit_id&gt;
 </code></pre></div>
-<h3 id="_3">注意</h3>
+<h3 id="_29">注意</h3>
 <ol>
 <li><code>git blame</code> 显示的是“该行最后一次修改者”，不一定是最初作者。</li>
 <li>若经历过大规模格式化，归属可能被刷新，可配合 <code>-w</code> 降低干扰。</li>

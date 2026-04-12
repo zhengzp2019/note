@@ -138,9 +138,23 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">com.mysql.cj.jdbc.Driver</span>
 
 <span class="nt">mybatis-plus</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># 指定 MyBatis Mapper XML 文件的位置，项目中如果仍然保留自定义 SQL 的 XML 写法，通常需要配置这一项</span>
+<span class="w">  </span><span class="nt">mapper-locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath*:/mapper/**/*.xml</span>
+<span class="w">  </span><span class="c1"># 指定实体类别名所在包，配置后在 XML 中可以直接使用类名而不必写全限定类名</span>
+<span class="w">  </span><span class="nt">type-aliases-package</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">com.jd.tianji.ops.model.entity</span>
 <span class="w">  </span><span class="nt">configuration</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># 开启下划线转驼峰映射</span>
 <span class="w">    </span><span class="nt">map-underscore-to-camel-case</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">log-impl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.apache.ibatis.logging.stdout.StdOutImpl</span>
+<span class="w">    </span><span class="c1"># 指定 MyBatis 日志实现，这里表示将 SQL 日志输出到 Slf4j，便于统一接入项目日志体系</span>
+<span class="w">    </span><span class="nt">log-impl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.apache.ibatis.logging.slf4j.Slf4jImpl</span>
+<span class="w">  </span><span class="nt">global-config</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">db-config</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># 指定逻辑删除字段名，MyBatis-Plus 会基于这个字段自动处理“删除”与“查询未删除数据”的逻辑</span>
+<span class="w">      </span><span class="nt">logic-delete-field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deleted</span>
+<span class="w">      </span><span class="c1"># 指定逻辑删除后的字段值，例如删除时会把 deleted 更新为 1</span>
+<span class="w">      </span><span class="nt">logic-delete-value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="c1"># 指定未删除时的字段值，查询时 MyBatis-Plus 会自动按这个值过滤数据</span>
+<span class="w">      </span><span class="nt">logic-not-delete-value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
 <h3 id="33-mapper">3.3 启动类扫描 Mapper</h3>
 <div class="highlight"><pre><span></span><code><span class="nd">@SpringBootApplication</span>
