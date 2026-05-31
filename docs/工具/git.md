@@ -48,6 +48,54 @@ git commit -m "fix: update app logic"
 
 则本次提交只会包含 `App.java` 的改动，而 `UserService.java` 仍未被提交。
 
+## stash
+
+`git stash` 用于临时保存当前工作区和暂存区中的改动，适合在不想立刻提交、但又需要切换分支或临时回滚到干净状态时使用。它会把未提交的修改收起来，方便后续再恢复。
+
+### 常见用法
+
+```bash
+# 查看所有 stash 记录
+git stash list
+
+# 保存当前修改，生成一条 stash 记录
+git stash
+
+# 保存当前修改并附带说明
+git stash push -m "wip: app service refactor"
+
+# 查看某条 stash 的概要
+git stash show stash@{0}
+
+# 查看某条 stash 的详细 diff
+git stash show -p stash@{0}
+
+# 恢复某条 stash，但保留该记录
+git stash apply stash@{0}
+
+# 恢复某条 stash，并删除该记录
+git stash pop stash@{0}
+
+# 删除某条 stash 记录
+git stash drop stash@{0}
+
+# 清空所有 stash 记录
+git stash clear
+```
+
+### 使用说明
+
+1. `git stash apply` 只负责恢复改动，不会删除对应的 stash 记录。
+2. `git stash pop` 会在恢复成功后删除对应记录，因此更适合“确认不再需要这条 stash”的场景。
+3. `git stash show -p` 可以直接看到改动内容，排查某次临时保存了什么时很方便。
+4. `stash@{0}` 通常表示最新一条记录，`stash@{1}` 表示上一条，以此类推。
+
+### 典型场景
+
+1. 当前分支改到一半，但需要切到别的分支紧急处理问题。
+2. 本地有一些临时修改，不想提交到仓库，只想先收起来。
+3. 想对比某次暂存的改动内容，再决定是否恢复。
+
 ## merge
 
 `git merge` 用于将某个分支的整体变更并入当前分支。执行 `merge` 时，Git 会以两个分支的共同祖先为基础，计算差异并完成合并。若当前分支与目标分支均有新增提交，Git 通常会生成一次新的合并提交，以记录两条历史链在此处汇合。
