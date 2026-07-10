@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" role="img" aria-labelledby="title desc">
+  <title id="title">Bian Que 生产级 AIOps Agent 架构</title>
+  <desc id="desc">展示 Bian Que 从告警、指标、日志、变更输入，到数据知识底座、Agent 编排、三道防线和人机协同护栏的整体架构。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#eef6ff"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#059669"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ea580c"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font:700 28px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#0f172a}
+      .subtitle{font:500 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#475569}
+      .label{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#0f172a}
+      .small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#334155}
+      .tiny{font:500 12px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#64748b}
+      .white{fill:#fff}.line{stroke:#475569;stroke-width:2.2;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:6 6;fill:none}
+    </style>
+  </defs>
+
+  <rect width="1180" height="720" rx="28" fill="url(#bg)"/>
+  <text x="590" y="48" text-anchor="middle" class="title">Bian Que（扁鹊）生产级 AIOps Agent 架构</text>
+  <text x="590" y="76" text-anchor="middle" class="subtitle">告警治理 · 根因定位 · 故障缓解 · 发布风险拦截</text>
+
+  <g filter="url(#shadow)">
+    <rect x="58" y="118" width="190" height="92" rx="18" class="white"/>
+    <rect x="278" y="118" width="190" height="92" rx="18" class="white"/>
+    <rect x="498" y="118" width="190" height="92" rx="18" class="white"/>
+    <rect x="718" y="118" width="190" height="92" rx="18" class="white"/>
+    <rect x="938" y="118" width="190" height="92" rx="18" class="white"/>
+  </g>
+  <text x="153" y="154" text-anchor="middle" class="label">Alerts</text>
+  <text x="153" y="184" text-anchor="middle" class="small">告警流 / 工单</text>
+  <text x="373" y="154" text-anchor="middle" class="label">Metrics</text>
+  <text x="373" y="184" text-anchor="middle" class="small">SLO / 指标异常</text>
+  <text x="593" y="154" text-anchor="middle" class="label">Logs &amp; Trace</text>
+  <text x="593" y="184" text-anchor="middle" class="small">日志 / 链路证据</text>
+  <text x="813" y="154" text-anchor="middle" class="label">Changes</text>
+  <text x="813" y="184" text-anchor="middle" class="small">发布 / 配置 / 容量</text>
+  <text x="1033" y="154" text-anchor="middle" class="label">Topology</text>
+  <text x="1033" y="184" text-anchor="middle" class="small">服务依赖 / 影响面</text>
+
+  <path d="M153 210 V256" class="line"/><path d="M373 210 V256" class="line"/><path d="M593 210 V256" class="line"/><path d="M813 210 V256" class="line"/><path d="M1033 210 V256" class="line"/>
+
+  <g filter="url(#shadow)">
+    <rect x="170" y="258" width="840" height="112" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  </g>
+  <text x="590" y="296" text-anchor="middle" class="label">Data Warehouse / Knowledge Base</text>
+  <text x="590" y="326" text-anchor="middle" class="small">监控元数据 · 服务画像 · 历史 Case · Runbook · 业务规则 · 值班上下文</text>
+  <text x="590" y="350" text-anchor="middle" class="tiny">统一上下文减少单点信号误判，为 LLM 推理提供可追溯证据</text>
+
+  <path d="M590 370 V416" class="line"/>
+
+  <g filter="url(#shadow)">
+    <rect x="260" y="418" width="660" height="96" rx="22" fill="url(#blue)"/>
+  </g>
+  <text x="590" y="456" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="22" font-weight="700" fill="#fff">Agent Orchestrator / Workflow Engine</text>
+  <text x="590" y="488" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="15" font-weight="600" fill="#dbeafe">Parse → Skill Match → Data Fetch → Diagnosis → Action</text>
+
+  <path d="M590 514 V546" class="line"/>
+  <path d="M590 546 H260 V570" class="line"/>
+  <path d="M590 546 V570" class="line"/>
+  <path d="M590 546 H920 V570" class="line"/>
+
+  <g filter="url(#shadow)">
+    <rect x="90" y="570" width="340" height="92" rx="20" fill="url(#green)"/>
+    <rect x="420" y="570" width="340" height="92" rx="20" fill="url(#orange)"/>
+    <rect x="750" y="570" width="340" height="92" rx="20" fill="#7c3aed"/>
+  </g>
+  <text x="260" y="608" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="19" font-weight="700" fill="#fff">Defense 1：发布拦截</text>
+  <text x="260" y="636" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="14" fill="#dcfce7">事前风险识别 / 灰度收敛 / 回滚建议</text>
+  <text x="590" y="608" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="19" font-weight="700" fill="#fff">Defense 2：告警辅助</text>
+  <text x="590" y="636" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="14" fill="#ffedd5">聚合降噪 / 自动摘要 / 低风险 Runbook</text>
+  <text x="920" y="608" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="19" font-weight="700" fill="#fff">Defense 3：RCA + 缓解</text>
+  <text x="920" y="636" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="14" fill="#ede9fe">根因排序 / 证据链 / 分级执行</text>
+
+  <rect x="42" y="390" width="150" height="84" rx="16" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+  <text x="117" y="424" text-anchor="middle" class="small">Guardrails</text>
+  <text x="117" y="450" text-anchor="middle" class="tiny">权限 · 审批 · 审计</text>
+  <path d="M192 432 H260" class="dash"/>
+
+  <rect x="988" y="390" width="150" height="84" rx="16" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="2"/>
+  <text x="1063" y="424" text-anchor="middle" class="small">Human-in-loop</text>
+  <text x="1063" y="450" text-anchor="middle" class="tiny">确认 · 复盘 · 反馈</text>
+  <path d="M920 432 H988" class="dash"/>
+</svg>

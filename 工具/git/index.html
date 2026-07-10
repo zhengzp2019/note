@@ -43,6 +43,9 @@
               {title: "restore", url: "#restore" },
               {title: "rm\uff08\u4ece\u7d22\u5f15\u6811\u4e2d\u5220\u9664\u6587\u4ef6\uff09", url: "#rm" },
               {title: "blame\uff08\u5b9a\u4f4d\u6bcf\u884c\u6700\u540e\u4fee\u6539\u4eba\uff09", url: "#blame" },
+              {title: "tail\uff08\u67e5\u770b\u6587\u4ef6\u672b\u5c3e\uff09", url: "#tail" },
+              {title: "grep\uff08\u6309\u6761\u4ef6\u67e5\u8be2\uff09", url: "#grep" },
+              {title: "sed\uff08\u6309\u884c\u622a\u53d6\u4e0e\u67e5\u8be2\uff09", url: "#sed" },
           ]},
         ];
 
@@ -447,6 +450,82 @@ git<span class="w"> </span>show<span class="w"> </span>&lt;commit_id&gt;
 <ol>
 <li><code>git blame</code> 显示的是“该行最后一次修改者”，不一定是最初作者。</li>
 <li>若经历过大规模格式化，归属可能被刷新，可配合 <code>-w</code> 降低干扰。</li>
+</ol>
+<h2 id="tail">tail（查看文件末尾）</h2>
+<p><code>tail</code> 用于查看文件末尾内容，也可从指定行开始输出到文件结尾。</p>
+<h3 id="_33">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 显示文件最后 100 行</span>
+tail<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w"> </span>file.log
+
+<span class="c1"># 从第 100 行开始显示到文件末尾（跳过前 99 行）</span>
+tail<span class="w"> </span>-n<span class="w"> </span>+100<span class="w"> </span>file.log
+
+<span class="c1"># 实时跟踪文件新增内容（常用于观察日志）</span>
+tail<span class="w"> </span>-f<span class="w"> </span>file.log
+</code></pre></div>
+<h3 id="_34">使用说明</h3>
+<ol>
+<li><code>tail -n 100</code>：显示文件<strong>最后</strong> 100 行，参数为“数量”。</li>
+<li><code>tail -n +100</code>：从<strong>第 100 行开始</strong>显示到结尾，参数为“起始行号”，关键在于 <code>+</code> 号。</li>
+<li><code>head</code> 与 <code>tail</code> 组合可截取任意行区间，例如查看第 100 至 200 行：</li>
+</ol>
+<div class="highlight"><pre><span></span><code>head<span class="w"> </span>-n<span class="w"> </span><span class="m">200</span><span class="w"> </span>file.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-n<span class="w"> </span>+100
+</code></pre></div>
+<p>其中 <code>head -n 200</code> 先取前 200 行，再由 <code>tail -n +100</code> 从第 100 行显示，最终得到第 100 至 200 行。只看文件前段时，该方式读到第 200 行即停止，速度较快。</p>
+<h2 id="grep">grep（按条件查询）</h2>
+<p><code>grep</code> 用于按关键字或正则在文件中检索匹配行，配合参数可定位行号、查看上下文，或只保留部分匹配结果。</p>
+<h3 id="_35">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 显示匹配行及其行号</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;keyword&quot;</span><span class="w"> </span>file.log
+
+<span class="c1"># 匹配行 + 其后 5 行（After）</span>
+grep<span class="w"> </span>-A<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="s2">&quot;keyword&quot;</span><span class="w"> </span>file.log
+
+<span class="c1"># 匹配行 + 其前 5 行（Before）</span>
+grep<span class="w"> </span>-B<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="s2">&quot;keyword&quot;</span><span class="w"> </span>file.log
+
+<span class="c1"># 匹配行 + 前后各 5 行（Context）</span>
+grep<span class="w"> </span>-C<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="s2">&quot;keyword&quot;</span><span class="w"> </span>file.log
+</code></pre></div>
+<p>日志排查中，<code>-n</code>（定位行号）与 <code>-C</code>（查看上下文）的组合最为常用：</p>
+<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-n<span class="w"> </span>-C<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="w"> </span>app.log
+</code></pre></div>
+<h3 id="_36">保留第几个满足条件的结果</h3>
+<p>若匹配结果众多，但只关心其中第几个，可结合行号与 <code>sed</code> 定位：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 先带行号列出全部匹配，再取第 3 个</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;keyword&quot;</span><span class="w"> </span>file.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;3p&#39;</span>
+
+<span class="c1"># 保留第 3 至第 5 个匹配结果</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;keyword&quot;</span><span class="w"> </span>file.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;3,5p&#39;</span>
+</code></pre></div>
+<p>若只需前若干个匹配、找到即停止，可使用 <code>-m</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 找到 3 个匹配后立即停止扫描，适合大文件</span>
+grep<span class="w"> </span>-m<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;keyword&quot;</span><span class="w"> </span>file.log
+</code></pre></div>
+<h3 id="_37">使用说明</h3>
+<ol>
+<li><code>grep -m N</code> 会在匹配到 N 条后提前结束，处理大文件时可显著节省时间。</li>
+<li><code>grep -n ... | sed -n 'Np'</code> 的组合可精确取出第 N 个匹配，适合定位“第几次出现”的场景。</li>
+</ol>
+<h2 id="sed">sed（按行截取与查询）</h2>
+<p><code>sed</code> 是流式文本处理工具，此处主要用于按行号截取内容，或从其他命令的输出中挑选指定行。</p>
+<h3 id="_38">常见用法</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 查看文件的第 100 至 200 行</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;100,200p&#39;</span><span class="w"> </span>file.log
+
+<span class="c1"># 只查看第 100 行</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;100p&#39;</span><span class="w"> </span>file.log
+</code></pre></div>
+<p>其中 <code>-n</code> 表示不自动输出每一行，<code>p</code> 表示打印指定范围，二者需配合使用。</p>
+<h3 id="_39">在指定行范围内查询</h3>
+<p>若既要限定行范围、又要按关键字过滤，可先用 <code>sed</code> 截取再 <code>grep</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 仅在第 100 至 200 行范围内查找 keyword</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;100,200p&#39;</span><span class="w"> </span>file.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;keyword&quot;</span>
+</code></pre></div>
+<h3 id="_40">使用说明</h3>
+<ol>
+<li><code>sed -n 'n,mp'</code> 适合精确的行区间截取，是查看指定行最简洁的方式。</li>
+<li>配合 <code>grep -n</code> 的输出，<code>sed -n 'Np'</code> 可从众多匹配中取出第 N 个结果。</li>
 </ol>
 
   <br>

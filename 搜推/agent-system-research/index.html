@@ -154,9 +154,11 @@ Anthropic 与数十个团队合作后的核心发现：最成功的实现并没�
 </blockquote>
 <p><strong>基础构建块 — 增强型 LLM</strong>：
 每个 Agentic 系统的起点是增强了检索、工具和记忆的 LLM，通过 MCP 提供标准化集成。</p>
-<p><strong>Workflow vs Agent</strong>：
-- <strong>Workflow</strong>: LLM 通过<strong>预定义代码路径</strong>编排，确定性流程
-- <strong>Agent</strong>: LLM <strong>动态指导自身过程</strong>和工具使用，自主决策</p>
+<p><strong>Workflow vs Agent</strong>：</p>
+<ul>
+<li><strong>Workflow</strong>: LLM 通过<strong>预定义代码路径</strong>编排，确定性流程</li>
+<li><strong>Agent</strong>: LLM <strong>动态指导自身过程</strong>和工具使用，自主决策</li>
+</ul>
 <p><strong>五种 Workflow 模式</strong>：</p>
 <div class="highlight"><pre><span></span><code>1. Prompt Chaining (提示链)
    任务 → 步骤A → [验证门] → 步骤B → 结果
@@ -179,21 +181,27 @@ Anthropic 与数十个团队合作后的核心发现：最成功的实现并没�
    生成 LLM ↔ 评估 LLM (循环直到满意)
    适用: 可通过反馈明确改进的场景 (如翻译迭代)
 </code></pre></div>
-<p><strong>Agent 的适用条件</strong>：
-- 开放式问题，步骤不可预测
-- 无法硬编码固定路径
-- 模型的决策能力值得信赖</p>
-<p><strong>Agent 实现的三个核心原则</strong>：
-1. <strong>简单性</strong> — 复杂度仅在可证明改善结果时才添加
-2. <strong>透明性</strong> — 明确展示规划步骤
-3. <strong>工具设计</strong> — 花在工具优化上的时间应该超过总体 Prompt</p>
-<p><strong>工具设计最佳实践 (ACI — Agent-Computer Interface)</strong>：
-- 给模型足够 Token 去「思考」，避免自我困住
-- 格式贴近模型在互联网上见过的自然文本
-- 避免格式开销（精确行计数、字符串转义）
-- 应用 Poka-yoke 原则 — 让参数更难被误用
-- Anthropic 在 SWE-bench Agent 中「花在优化工具上的时间超过了优化整体 Prompt」
-- 示例：将相对路径切换为绝对路径消除了一整类错误</p>
+<p><strong>Agent 的适用条件</strong>：</p>
+<ul>
+<li>开放式问题，步骤不可预测</li>
+<li>无法硬编码固定路径</li>
+<li>模型的决策能力值得信赖</li>
+</ul>
+<p><strong>Agent 实现的三个核心原则</strong>：</p>
+<ol>
+<li><strong>简单性</strong> — 复杂度仅在可证明改善结果时才添加</li>
+<li><strong>透明性</strong> — 明确展示规划步骤</li>
+<li><strong>工具设计</strong> — 花在工具优化上的时间应该超过总体 Prompt</li>
+</ol>
+<p><strong>工具设计最佳实践 (ACI — Agent-Computer Interface)</strong>：</p>
+<ul>
+<li>给模型足够 Token 去「思考」，避免自我困住</li>
+<li>格式贴近模型在互联网上见过的自然文本</li>
+<li>避免格式开销（精确行计数、字符串转义）</li>
+<li>应用 Poka-yoke 原则 — 让参数更难被误用</li>
+<li>Anthropic 在 SWE-bench Agent 中「花在优化工具上的时间超过了优化整体 Prompt」</li>
+<li>示例：将相对路径切换为绝对路径消除了一整类错误</li>
+</ul>
 <h3 id="14">1.4 多智能体架构</h3>
 <p>LangGraph 定义的三种模式：</p>
 <ol>
@@ -201,10 +209,12 @@ Anthropic 与数十个团队合作后的核心发现：最成功的实现并没�
 <li><strong>Agent Supervisor</strong> — 监督者路由任务到独立 Agent</li>
 <li><strong>Hierarchical Agent Teams</strong> — 层级结构，子 Agent 本身是完整的 Agent 图</li>
 </ol>
-<p>多智能体相比单 Agent 的三大优势：
-- 工具/职责分组提高成功率（聚焦比全能更可靠）
-- 独立 Prompt 优化效果更好
-- 各 Agent 可独立评估和改进</p>
+<p>多智能体相比单 Agent 的三大优势：</p>
+<ul>
+<li>工具/职责分组提高成功率（聚焦比全能更可靠）</li>
+<li>独立 Prompt 优化效果更好</li>
+<li>各 Agent 可独立评估和改进</li>
+</ul>
 <hr />
 <h2 id="agent">二、运维 Agent 关键技术组件</h2>
 <h3 id="21-tool-use">2.1 工具调用（Tool Use）</h3>
@@ -216,13 +226,15 @@ Anthropic 与数十个团队合作后的核心发现：最成功的实现并没�
 ├── 知识工具: 文档检索、历史案例、运维知识库
 └── 通信工具: 通知告警、协作沟通、工单管理
 </code></pre></div>
-<p><strong>MCP（Model Context Protocol）</strong>：
-- Anthropic 推出的开源标准，连接 AI 与外部系统
-- 客户端-服务器架构（Host/Client/Server）
-- 基于 JSON-RPC 2.0
-- 定义三种服务端原语：<strong>Tools</strong>（可执行函数）、<strong>Resources</strong>（数据源）、<strong>Prompts</strong>（模板）
-- 已被 Claude、ChatGPT、VS Code、Cursor 等支持
-- 对运维 Agent 意义：提供<strong>标准化工具集成方式</strong></p>
+<p><strong>MCP（Model Context Protocol）</strong>：</p>
+<ul>
+<li>Anthropic 推出的开源标准，连接 AI 与外部系统</li>
+<li>客户端-服务器架构（Host/Client/Server）</li>
+<li>基于 JSON-RPC 2.0</li>
+<li>定义三种服务端原语：<strong>Tools</strong>（可执行函数）、<strong>Resources</strong>（数据源）、<strong>Prompts</strong>（模板）</li>
+<li>已被 Claude、ChatGPT、VS Code、Cursor 等支持</li>
+<li>对运维 Agent 意义：提供<strong>标准化工具集成方式</strong></li>
+</ul>
 <h3 id="22-memory">2.2 记忆管理（Memory）</h3>
 <div class="highlight"><pre><span></span><code>┌─────────────────────────────────────┐
 │           Agent 记忆体系             │
@@ -236,10 +248,12 @@ Anthropic 与数十个团队合作后的核心发现：最成功的实现并没�
 │               │ • 运维经验积累      │
 └─────────────────┴───────────────────┘
 </code></pre></div>
-<p><strong>RCAgent 的创新方案 — OBSK（Observation Snapshot Key）</strong>：
-- 仅向控制器展示观测数据的头部摘要
-- 完整数据存储在 KV Store 中通过 hash ID 引用
-- 解决云环境下长日志/大表格/代码的上下文溢出问题</p>
+<p><strong>RCAgent 的创新方案 — OBSK（Observation Snapshot Key）</strong>：</p>
+<ul>
+<li>仅向控制器展示观测数据的头部摘要</li>
+<li>完整数据存储在 KV Store 中通过 hash ID 引用</li>
+<li>解决云环境下长日志/大表格/代码的上下文溢出问题</li>
+</ul>
 <h3 id="23-rag">2.3 RAG 演进（检索增强生成）</h3>
 <div class="highlight"><pre><span></span><code>朴素RAG → 高级RAG → 模块化RAG → Agentic RAG
   │         │         │           │
@@ -337,11 +351,13 @@ Anthropic 与数十个团队合作后的核心发现：最成功的实现并没�
 │  • 最终目标: Self-Healing Cloud                 │
 └─────────────────────────────────────────────────┘
 </code></pre></div>
-<p><strong>对我们的启示</strong>：
-- 运维 Agent 需要<strong>标准化评估体系</strong>，不能仅靠主观打分
-- 故障注入 + 自动评估是验证 Agent 能力的关键手段
-- Agent 接口需要标准化，方便替换和比较不同实现
-- LLM Agent 在处理复杂运维任务时仍有明显局限性（论文通过 benchmark 验证）</p>
+<p><strong>对我们的启示</strong>：</p>
+<ul>
+<li>运维 Agent 需要<strong>标准化评估体系</strong>，不能仅靠主观打分</li>
+<li>故障注入 + 自动评估是验证 Agent 能力的关键手段</li>
+<li>Agent 接口需要标准化，方便替换和比较不同实现</li>
+<li>LLM Agent 在处理复杂运维任务时仍有明显局限性（论文通过 benchmark 验证）</li>
+</ul>
 <h4 id="322-davis-ai-dynatrace-ai">3.2.2 Davis AI (Dynatrace) — 因果+生成式 AI 融合架构</h4>
 <blockquote>
 <p>来源: Dynatrace 官方文档 (docs.dynatrace.com/docs/platform/davis-ai)</p>
@@ -382,11 +398,13 @@ Anthropic 与数十个团队合作后的核心发现：最成功的实现并没�
 │  • 自动丰富事件上下文，加速人工交接              │
 └─────────────────────────────────────────────────┘
 </code></pre></div>
-<p><strong>关键设计原则</strong>：
-- <strong>确定性基座 + 生成式增强</strong>：不让 LLM 做因果推理，因果推理用拓扑图确定性完成
-- <strong>Policy Guardrails</strong>：Agentic AI 在策略护栏下运行，只能执行预审批的操作
-- <strong>Approved Actions</strong>：Agent 可以提出并执行修复/回滚，但必须在预定义的审批策略范围内
-- <strong>上下文传递</strong>：自动为事件补充证据和上下文，简化人工交接和解决</p>
+<p><strong>关键设计原则</strong>：</p>
+<ul>
+<li><strong>确定性基座 + 生成式增强</strong>：不让 LLM 做因果推理，因果推理用拓扑图确定性完成</li>
+<li><strong>Policy Guardrails</strong>：Agentic AI 在策略护栏下运行，只能执行预审批的操作</li>
+<li><strong>Approved Actions</strong>：Agent 可以提出并执行修复/回滚，但必须在预定义的审批策略范围内</li>
+<li><strong>上下文传递</strong>：自动为事件补充证据和上下文，简化人工交接和解决</li>
+</ul>
 <h4 id="323-stratus">3.2.3 STRATUS — 多智能体自主可靠性工程</h4>
 <p>STRATUS 代表了运维领域<strong>多智能体协作</strong>的前沿探索：</p>
 <div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
@@ -497,14 +515,167 @@ Argos方式: 历史数据 → LLM → 生成规则 → 规则引擎实时执行 
 • LLM 仅在规则生成阶段参与
 </code></pre></div>
 <h4 id="327-bian-que-agent">3.2.7 Bian Que（扁鹊）— 生产级运维 Agent</h4>
-<div class="highlight"><pre><span></span><code>关键指标:
-• 告警减少 75% (告警聚合+降噪+自动处理)
-• MTTR 减半 (自动诊断+推荐修复方案)
-
-设计思路:
-• 告警 → 聚合降噪 → 上下文富化 → 自动诊断 → 修复建议/自动执行
-• 重点解决「告警风暴」和「MTTR 过长」两大运维痛点
+<blockquote>
+<p>论文: "Bian Que: A Production-Oriented AIOps Assistant for Alert Reduction, Root Cause Localization, and Incident Mitigation"
+来源: arXiv:2604.26805v2；GitHub: benchen4395/BianQue_Assistant
+适用场景: 大规模互联网服务的告警治理、故障定位、发布拦截、变更风险控制</p>
+</blockquote>
+<p>Bian Que 的核心价值不是做一个「聊天式运维助手」，而是把 LLM Agent 嵌入生产运维闭环，围绕<strong>告警减少、根因定位、故障缓解</strong>三个高频场景形成可执行工作流。公开资料披露的关键效果是：告警量减少约 <strong>75%</strong>，MTTR 减半；系统以「三道防线」承载生产环境的事前、事中、事后运维自动化。</p>
+<p><img alt="Bian Que 生产级 AIOps Agent 架构" src="../../resources/image/bian-que-architecture.svg" /></p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────┐
+│                 Bian Que 生产级 AIOps Agent 架构                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  输入层: 事件 + 上下文                                            │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │
+│  │ Alerts   │ │ Metrics  │ │ Logs     │ │ Changes  │          │
+│  │ 告警流    │ │ 指标      │ │ 日志      │ │ 发布/配置  │          │
+│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘          │
+│       └────────────┴────────────┴────────────┴──────┐         │
+│                                                      ▼         │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │             Data Warehouse / Knowledge Base              │   │
+│  │  • 监控元数据  • 服务拓扑  • 历史 Case  • Runbook        │   │
+│  │  • 变更记录    • 业务规则  • SLO/阈值   • 值班上下文      │   │
+│  └───────────────────────┬─────────────────────────────────┘   │
+│                          │                                     │
+│                          ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              Agent Orchestrator / Workflow Engine        │   │
+│  │  Parse → Skill Match → Data Fetch → Diagnosis → Action   │   │
+│  └──────────────┬───────────────────┬──────────────────────┘   │
+│                 │                   │                          │
+│     ┌───────────▼──────────┐ ┌──────▼───────┐ ┌──────────────┐ │
+│     │ Defense 1:           │ │ Defense 2:   │ │ Defense 3:   │ │
+│     │ Release Interception │ │ Alert Assist │ │ RCA/Recovery │ │
+│     │ 发布前风险拦截        │ │ 告警降噪处置  │ │ 根因+缓解     │ │
+│     └───────────┬──────────┘ └──────┬───────┘ └──────┬───────┘ │
+│                 │                   │                │         │
+│                 ▼                   ▼                ▼         │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │             Guardrails + Human-in-the-Loop               │   │
+│  │  • 动作分级  • 审批门禁  • 回滚预案  • 审计追踪          │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
 </code></pre></div>
+<p><strong>三道防线设计</strong>：</p>
+<p><img alt="Bian Que 三道防线" src="../../resources/image/bian-que-three-defenses.svg" /></p>
+<ul>
+<li>
+<p><strong>第一道防线：发布拦截（Release Interception）</strong><br />
+  在故障发生前处理风险。Agent 结合发布单、代码/配置变更、历史事故、服务依赖和核心指标，判断本次变更是否可能触发异常；高风险发布进入人工确认、灰度收敛或自动回滚流程。这个设计将 Agent 从「事后救火」前移到「事前预防」。</p>
+</li>
+<li>
+<p><strong>第二道防线：主动巡检与告警辅助（Proactive Inspection &amp; Alert Assistance）</strong><br />
+  面向告警风暴和重复告警，先进行聚合、去重、抑制和上下文富化，再让 Agent 判断告警是否需要升级、合并到既有事件、自动执行低风险 Runbook，或生成值班人员可读的摘要。75% 告警减少主要来自这一层：不是简单关闭告警，而是把噪声、衍生告警和可自动处理告警从人工入口移除。</p>
+</li>
+<li>
+<p><strong>第三道防线：根因定位与故障缓解（Root Cause Localization &amp; Incident Mitigation）</strong><br />
+  当事件升级为真实故障后，Agent 按服务拓扑、时间线和变更链路展开诊断：先定位影响范围，再从指标、日志、变更、依赖服务中收集证据，最后输出根因假设、置信度、证据链和缓解动作。高风险动作需要人工审批，低风险动作可自动执行。</p>
+</li>
+</ul>
+<p><strong>Agent 工作流拆解</strong>：</p>
+<p><img alt="Bian Que Agent 工作流" src="../../resources/image/bian-que-agent-workflow.svg" /></p>
+<div class="highlight"><pre><span></span><code>1. Parse
+   解析告警/工单/自然语言问题，抽取服务、时间窗口、症状、SLO、影响范围
+
+2. Skill Match
+   匹配合适 Skill：告警压缩、日志分析、指标诊断、变更分析、拓扑追踪、Runbook 执行
+
+3. Context Enrichment
+   从数据仓库补齐服务画像、依赖拓扑、历史 Case、近期变更、值班信息
+
+4. Evidence Collection
+   并行查询指标/日志/Trace/发布系统，构建可追溯证据链
+
+5. Reasoning &amp; Ranking
+   生成根因候选，按时间相关性、拓扑距离、变更相关性、异常强度排序
+
+6. Mitigation Planning
+   给出分级动作：观察、扩容、限流、切流、回滚、重启、升级人工
+
+7. Feedback Learning
+   记录人工采纳/驳回、执行结果和复盘结论，沉淀到 Case Memory / Skill 配置
+</code></pre></div>
+<p><strong>关键架构特征</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>设计要点</th>
+<th>生产价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skill 化工具层</td>
+<td>将诊断动作封装为可编排 Skill，而不是让 LLM 直接随意调用底层系统</td>
+<td>降低幻觉和误操作，便于权限控制与复用</td>
+</tr>
+<tr>
+<td>统一数据上下文</td>
+<td>接入告警、指标、日志、变更、拓扑、历史 Case</td>
+<td>避免只看单一信号导致误判</td>
+</tr>
+<tr>
+<td>规则 + LLM 混合</td>
+<td>稳定逻辑交给规则/阈值/工作流，复杂解释和摘要交给 LLM</td>
+<td>兼顾确定性、可解释性和泛化能力</td>
+</tr>
+<tr>
+<td>证据链输出</td>
+<td>每个根因结论绑定观测证据、时间线和影响范围</td>
+<td>便于 SRE 审核，降低黑盒决策风险</td>
+</tr>
+<tr>
+<td>人机协同门禁</td>
+<td>按动作风险分级：只读、建议、低风险执行、高风险审批</td>
+<td>适配真实生产变更安全要求</td>
+</tr>
+<tr>
+<td>反馈闭环</td>
+<td>把处理结果、人工反馈、复盘结论写回知识库</td>
+<td>让 Agent 从历史事故中持续改进</td>
+</tr>
+</tbody>
+</table>
+<p><strong>与其他运维 Agent 的差异</strong>：</p>
+<ul>
+<li>相比 <strong>RCAgent</strong>，Bian Que 更强调生产闭环：不仅定位根因，还覆盖发布拦截、告警治理和缓解动作。</li>
+<li>相比 <strong>AgentFM</strong>，Bian Que 不以多角色协作为主要卖点，而是以 Skill 编排和生产数据接入为核心。</li>
+<li>相比 <strong>Argos</strong>，Bian Que 不是只让 LLM 生成检测规则，而是让 LLM 参与事件理解、证据组织、根因排序和修复建议。</li>
+<li>相比 <strong>DeepFlow 智能体</strong>，Bian Que 公开资料更聚焦 AIOps 工作流与生产效果，DeepFlow 更强调零侵入观测底座和思维状态机。</li>
+</ul>
+<p><strong>落地启示</strong>：</p>
+<ol>
+<li><strong>先治理入口，再做智能诊断</strong>：如果告警入口没有聚合、降噪和上下文富化，Agent 会被噪声淹没。</li>
+<li><strong>Skill 边界比 Prompt 更重要</strong>：生产系统里应该把每个可执行能力设计成有输入 Schema、权限、超时、审计和回滚语义的 Skill。</li>
+<li><strong>变更数据是 RCA 的一等公民</strong>：大部分生产故障与发布、配置、容量、依赖变更有关；没有变更链路，根因定位会退化成指标猜测。</li>
+<li><strong>输出必须可审计</strong>：根因结论要包含证据、时间线、排除项和置信度，而不是只给一句自然语言判断。</li>
+<li><strong>自动执行要分级</strong>：建议从只读诊断、摘要生成、低风险 Runbook 开始，再逐步扩展到回滚、切流等高风险动作。</li>
+<li><strong>Case Memory 要结构化</strong>：复盘结论如果只存自然语言文档，很难复用；应沉淀为症状、根因、证据、动作、结果、适用条件。</li>
+</ol>
+<p><strong>可复用到我们系统的参考架构</strong>：</p>
+<div class="highlight"><pre><span></span><code>告警/异常事件
+   │
+   ▼
+事件归并层：fingerprint + 拓扑 + 时间窗口 + 影响范围
+   │
+   ▼
+上下文富化层：服务画像 + 近期变更 + 指标快照 + 日志摘要 + 历史 Case
+   │
+   ▼
+诊断编排层：选择 Skill → 并行取证 → 根因候选排序 → 生成证据链
+   │
+   ▼
+动作决策层：建议 / 自动低风险处理 / 高风险审批 / 升级人工
+   │
+   ▼
+反馈学习层：采纳结果 + 执行结果 + 复盘结论 → Case Memory / 规则更新
+</code></pre></div>
+<blockquote>
+<p>可信度说明：Bian Que 的架构和指标来自论文与开源仓库公开信息，但生产指标通常依赖具体业务规模、告警质量、自动化 Runbook 成熟度和组织流程，不能直接外推到其他公司。</p>
+</blockquote>
 <h4 id="328-deepflow">3.2.8 DeepFlow 智能体 — 思维状态机 + 零侵入观测</h4>
 <blockquote>
 <p>来源: deepflow.io/agent/ (官方产品页)</p>
@@ -553,10 +724,12 @@ Argos方式: 历史数据 → LLM → 生成规则 → 规则引擎实时执行 
 │  • Agent 自主使用各类观测工具                    │
 └─────────────────────────────────────────────────┘
 </code></pre></div>
-<p><strong>独特创新点</strong>：
-- <strong>思维状态机 (DFA+NFA)</strong>：将 CoT 推理过程用状态机约束，既保留 LLM 灵活性，又避免发散/幻觉
-- <strong>零侵入数据采集</strong>：通过 eBPF 技术无需修改应用代码，解决运维 Agent 数据获取难题
-- <strong>自适应感知</strong>：不是一次性加载所有数据，而是推理过程中按需获取，控制 Token 成本</p>
+<p><strong>独特创新点</strong>：</p>
+<ul>
+<li><strong>思维状态机 (DFA+NFA)</strong>：将 CoT 推理过程用状态机约束，既保留 LLM 灵活性，又避免发散/幻觉</li>
+<li><strong>零侵入数据采集</strong>：通过 eBPF 技术无需修改应用代码，解决运维 Agent 数据获取难题</li>
+<li><strong>自适应感知</strong>：不是一次性加载所有数据，而是推理过程中按需获取，控制 Token 成本</li>
+</ul>
 <h4 id="329-aws-devops-agent-agent-mcp">3.2.9 AWS DevOps Agent — 多 Agent 推理 + MCP 扩展</h4>
 <blockquote>
 <p>来源: AWS DevOps Blog (官方博客)</p>
@@ -601,10 +774,12 @@ Argos方式: 历史数据 → LLM → 生成规则 → 规则引擎实时执行 
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 </code></pre></div>
-<p><strong>关键设计决策</strong>：
-- <strong>多 Agent 对抗确认偏见</strong>：不是单线程调查，而是多个 Agent 并行探索不同假设
-- <strong>MCP 作为扩展协议</strong>：Agent 能力通过 MCP Server 插件化扩展，不需修改核心代码
-- <strong>跨工具链整合</strong>：不限于 AWS 自身生态，主动集成 Datadog/Elasticsearch 等第三方</p>
+<p><strong>关键设计决策</strong>：</p>
+<ul>
+<li><strong>多 Agent 对抗确认偏见</strong>：不是单线程调查，而是多个 Agent 并行探索不同假设</li>
+<li><strong>MCP 作为扩展协议</strong>：Agent 能力通过 MCP Server 插件化扩展，不需修改核心代码</li>
+<li><strong>跨工具链整合</strong>：不限于 AWS 自身生态，主动集成 Datadog/Elasticsearch 等第三方</li>
+</ul>
 <h4 id="3210-gemini-cloud-assist-gcp">3.2.10 Gemini Cloud Assist — GCP 原生全生命周期助手</h4>
 <blockquote>
 <p>来源: cloud.google.com/products/gemini/cloud-assist</p>
@@ -683,10 +858,12 @@ Argos方式: 历史数据 → LLM → 生成规则 → 规则引擎实时执行 
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 </code></pre></div>
-<p><strong>对运维 Agent 系统的启示</strong>：
-- Agent 系统需要<strong>专门的部署和治理平台</strong>（不只是写 Agent 代码）
-- MCP Gateway 提供标准化工具注册和访问控制
-- 合规和审计是企业级 Agent 部署的硬需求</p>
+<p><strong>对运维 Agent 系统的启示</strong>：</p>
+<ul>
+<li>Agent 系统需要<strong>专门的部署和治理平台</strong>（不只是写 Agent 代码）</li>
+<li>MCP Gateway 提供标准化工具注册和访问控制</li>
+<li>合规和审计是企业级 Agent 部署的硬需求</li>
+</ul>
 <h3 id="33-agent">3.3 自动化运维 Agent 架构设计模式总结</h3>
 <p>基于以上 14 个系统的分析，总结出 <strong>5 种核心架构模式</strong>：</p>
 <h4 id="react-agent">模式一：单体 ReAct Agent（入门级）</h4>
@@ -1253,6 +1430,16 @@ Argos方式: 历史数据 → LLM → 生成规则 → 规则引擎实时执行 
 <td><a href="https://zhuanlan.zhihu.com/p/1995167173094695116">知乎专栏</a></td>
 <td>行业文章</td>
 <td>用户提供</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2604.26805v2">Bian Que 论文</a></td>
+<td>学术论文</td>
+<td>1-0 部分验证</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benchen4395/BianQue_Assistant">BianQue_Assistant GitHub</a></td>
+<td>开源实现</td>
+<td>1-0 部分验证</td>
 </tr>
 </tbody>
 </table>
