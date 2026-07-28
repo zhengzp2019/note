@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    <link rel="canonical" href="https://zhengzp2019.github.io/note/java/JVM%E5%86%85%E5%AD%98%E4%B8%8EGC/">
+    <link rel="shortcut icon" href="../../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>JVM 内存与 GC - mydocs</title>
+    <link href="../../css/bootstrap-3.3.7.min.css" rel="stylesheet">
+    <link href="../../css/font-awesome-4.7.0.css" rel="stylesheet">
+    <link href="../../css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/highlight.css">
+    <link href="../../resources/styles/admonition-fix.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../../js/jquery-3.2.1.min.js"></script>
+    <script src="../../js/bootstrap-3.3.7.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    
+    <base target="_top">
+    <script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "JVM \u5185\u5b58\u4e0e GC", url: "#_top", children: [
+              {title: "JVM \u8fd0\u884c\u65f6\u5185\u5b58\u533a\u57df", url: "#jvm" },
+              {title: "\u5806\u7684\u5206\u4ee3\u7ed3\u6784", url: "#_1" },
+              {title: "Young GC\uff08Minor GC\uff09", url: "#young-gcminor-gc" },
+              {title: "Full GC", url: "#full-gc" },
+              {title: "\u5143\u7a7a\u95f4(Metaspace)", url: "#metaspace" },
+              {title: "\u5143\u7a7a\u95f4\u53c2\u6570\uff1aMetaspaceSize vs MaxMetaspaceSize", url: "#metaspacesize-vs-maxmetaspacesize" },
+              {title: "\u5143\u7a7a\u95f4\u95ee\u9898\u6392\u67e5", url: "#_8" },
+              {title: "\u5143\u7a7a\u95f4\u6ee1\u5bfc\u81f4\u7684\u8fde\u9501\u6545\u969c\uff08\u771f\u5b9e\u6848\u4f8b\uff09", url: "#_11" },
+          ]},
+        ];
+
+    </script>
+    <script src="../../js/base.js"></script> 
+</head>
+
+<body>
+<script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script>
+
+
+
+<div class="container-fluid wm-page-content">
+  <a name="_top"></a>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
+        java8 新特性
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../Docker/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../Docker/" class="btn btn-xs btn-link">
+        Docker
+      </a>
+    </div>
+    
+  </div>
+
+    
+
+    <h1 id="jvm-gc">JVM 内存与 GC</h1>
+<h2 id="jvm">JVM 运行时内存区域</h2>
+<table>
+<thead>
+<tr>
+<th>区域</th>
+<th>存什么</th>
+<th>是否线程共享</th>
+<th>GC 是否管理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>堆(Heap)</td>
+<td>对象实例、数组</td>
+<td>共享</td>
+<td>是（GC 主战场）</td>
+</tr>
+<tr>
+<td>元空间(Metaspace)</td>
+<td>类的元数据</td>
+<td>共享</td>
+<td>是（类卸载时）</td>
+</tr>
+<tr>
+<td>虚拟机栈</td>
+<td>栈帧（局部变量、操作数栈）</td>
+<td>线程私有</td>
+<td>否</td>
+</tr>
+<tr>
+<td>本地方法栈</td>
+<td>native 方法栈帧</td>
+<td>线程私有</td>
+<td>否</td>
+</tr>
+<tr>
+<td>程序计数器</td>
+<td>当前线程执行的字节码行号</td>
+<td>线程私有</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">堆的分代结构</h2>
+<p>堆分为<strong>年轻代(Young)</strong>和<strong>老年代(Old)</strong>。</p>
+<div class="highlight"><pre><span></span><code>堆(Heap)
+├── 年轻代 Young Generation
+│   ├── Eden 区          ← 新对象在这里分配
+│   ├── Survivor 0 (S0)  ← from
+│   └── Survivor 1 (S1)  ← to
+└── 老年代 Old Generation ← 长期存活对象 / 大对象
+</code></pre></div>
+<p>默认比例：Eden : S0 : S1 = 8 : 1 : 1（可用 <code>-XX:SurvivorRatio</code> 调整）。</p>
+<h3 id="_2">对象在分代间的流转</h3>
+<ol>
+<li>新对象优先在 <strong>Eden</strong> 分配。</li>
+<li>Eden 满 → 触发 <strong>Young GC</strong>，存活对象复制到 Survivor，年龄 +1。</li>
+<li>每经历一次 Young GC 仍存活，年龄 +1；年龄达到阈值（默认 15，<code>-XX:MaxTenuringThreshold</code>）→ <strong>晋升到老年代</strong>。</li>
+<li>大对象（超过 <code>-XX:PretenureSizeThreshold</code>）直接进老年代，避免在 Survivor 间反复复制。</li>
+<li>Survivor 区放不下（同龄对象总大小超过 Survivor 一半）→ 提前晋升。</li>
+</ol>
+<h2 id="young-gcminor-gc">Young GC（Minor GC）</h2>
+<ul>
+<li><strong>触发</strong>：Eden 区满时。</li>
+<li><strong>范围</strong>：只回收年轻代。</li>
+<li><strong>算法</strong>：复制算法（Eden + 一个 Survivor 中的存活对象复制到另一个 Survivor）。</li>
+<li><strong>特点</strong>：频繁、速度快（年轻代对象大多朝生夕死，存活率低）、STW 时间短。</li>
+</ul>
+<h2 id="full-gc">Full GC</h2>
+<ul>
+<li><strong>触发</strong>（常见原因）：</li>
+<li>老年代空间不足（对象晋升失败）。</li>
+<li>元空间(Metaspace)不足。</li>
+<li>显式调用 <code>System.gc()</code>。</li>
+<li>CMS 的 promotion failed / concurrent mode failure。</li>
+<li><strong>范围</strong>：整个堆（年轻代 + 老年代）+ 元空间。</li>
+<li><strong>特点</strong>：慢、STW 时间长（可能几百 ms 到数秒）。<strong>频繁 Full GC 是性能问题的重要信号</strong>。</li>
+</ul>
+<h3 id="young-gc-full-gc">Young GC 与 Full GC 对比</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Young GC</th>
+<th>Full GC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>回收范围</td>
+<td>年轻代</td>
+<td>整个堆 + 元空间</td>
+</tr>
+<tr>
+<td>频率</td>
+<td>高</td>
+<td>低（正常情况）</td>
+</tr>
+<tr>
+<td>STW 时长</td>
+<td>短</td>
+<td>长</td>
+</tr>
+<tr>
+<td>触发条件</td>
+<td>Eden 满</td>
+<td>老年代/元空间不足、System.gc() 等</td>
+</tr>
+</tbody>
+</table>
+<h2 id="metaspace">元空间(Metaspace)</h2>
+<p>JDK8 起用 <strong>Metaspace 取代永久代(PermGen)</strong>，位于<strong>本地内存(native memory)</strong>，不再受堆大小限制，默认上限受物理内存约束（可用 <code>-XX:MaxMetaspaceSize</code> 限定）。</p>
+<h3 id="_3">元空间存什么</h3>
+<ul>
+<li><strong>类的结构元数据(Klass)</strong>：类名、父类、接口、修饰符、字段定义、方法信息（签名、字节码、异常表）。</li>
+<li><strong>运行时常量池</strong>：字面量、符号引用。（注意：字符串常量池 JDK7 后已移到堆）</li>
+<li><strong>方法的字节码、JIT 编译相关数据</strong>。</li>
+<li>元数据的生命周期<strong>跟随 ClassLoader</strong>：只有 ClassLoader 被回收，它加载的所有类元数据才会卸载。</li>
+</ul>
+<h3 id="_4">关键认知</h3>
+<ul>
+<li><strong>对象再多不占元空间</strong>（那是堆的事）。元空间只和<strong>类的数量</strong>有关。</li>
+<li><strong>类越多、加载越频繁，元空间涨得越快</strong>。</li>
+<li>元空间 OOM 几乎总是<strong>类泄漏</strong>：动态生成类（fastjson ASM、cglib、$Proxy）挂在长期存活的 ClassLoader 上永不卸载，只涨不降最终撑爆。</li>
+</ul>
+<h2 id="metaspacesize-vs-maxmetaspacesize">元空间参数：MetaspaceSize vs MaxMetaspaceSize</h2>
+<div class="highlight"><pre><span></span><code>-XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m
+</code></pre></div>
+<p>容易被名字误导：<code>MetaspaceSize</code> <strong>不是「初始大小」</strong>，而是<strong>首次触发 Metaspace GC(类卸载)的阈值</strong>。</p>
+<h3 id="maxmetaspacesize">MaxMetaspaceSize —— 硬上限</h3>
+<ul>
+<li>元空间能占用的<strong>最大值</strong>，天花板。</li>
+<li>用量顶到该值且 GC 也卸载不掉类 → 抛 <code>OutOfMemoryError: Metaspace</code>。</li>
+<li>不设默认几乎无限(受本地内存约束)，容器里危险，应显式限定。</li>
+</ul>
+<h3 id="metaspacesize-gc">MetaspaceSize —— GC 触发阈值(高水位线)</h3>
+<ul>
+<li><strong>不是</strong>启动时就分配这么多，而是用量<strong>第一次涨到该值时触发一次 Metaspace GC</strong>，尝试卸载不再使用的类。</li>
+<li>这次 GC 后 JVM 会根据「释放了多少」<strong>动态调整水位线</strong>：</li>
+<li>释放得多 → 水位线<strong>下调</strong>。</li>
+<li>释放得少(类大多还在用) → 水位线<strong>上调</strong>(≤ Max)，避免频繁 GC。</li>
+<li>更像「开始关注并回收类的起点」，而非固定尺寸。</li>
+</ul>
+<h3 id="_5">类比与行为</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MetaspaceSize=128m</td>
+<td>水位涨到 128m 就<strong>拉警报做清理</strong></td>
+</tr>
+<tr>
+<td>MaxMetaspaceSize=256m</td>
+<td>水池<strong>最大只能装 256m</strong>，溢出就爆(OOM)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>0 ──涨──&gt; 128m ─┐
+               │ 触发 Metaspace GC，卸载无用类
+               ├─ 释放多 → 水位线下调
+               └─ 释放少 → 水位线上调(≤256m)
+继续增长 ... 最终顶到 256m 仍卸不掉 → OOM: Metaspace
+</code></pre></div>
+<h3 id="_6">调优建议</h3>
+<p>保持 <code>MetaspaceSize</code> 略高于常态基线(减少早期无谓的类卸载)、<code>Max</code> 留足余量。若基线 MU ≈ 214m：</p>
+<div class="highlight"><pre><span></span><code>-XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m
+</code></pre></div>
+<h3 id="_7">参数优先级（排查易踩的坑）</h3>
+<p>JVM 读参数有优先级，后读的覆盖先读的：</p>
+<div class="highlight"><pre><span></span><code>JAVA_TOOL_OPTIONS   ← 最低优先级
+命令行 -XX 参数       ← 覆盖上面
+_JAVA_OPTIONS       ← 最高
+</code></pre></div>
+<ul>
+<li>启动日志里 <code>Picked up JAVA_TOOL_OPTIONS: ...</code> 只是打印<strong>该环境变量的内容</strong>，不代表最终生效值——命令行 <code>-XX</code> 会覆盖它。</li>
+<li>曾遇到 <code>JAVA_TOOL_OPTIONS</code> 里被基础镜像注入 <code>MaxMetaspaceSize=1m</code>，但实际生效的是启动脚本命令行里的 <code>256m</code>。判断真实生效值应以命令行参数为准，或用 <code>jcmd &lt;pid&gt; VM.flags</code> 确认。</li>
+</ul>
+<h2 id="_8">元空间问题排查</h2>
+<p>背景：<code>java.lang.OutOfMemoryError: Metaspace</code>，常因元空间上限偏低或类泄漏。以下命令 <code>&lt;pid&gt;</code> 换成实际进程号。</p>
+<h3 id="1-jstat-gc">1. jstat —— 看实时使用量和 GC（首选）</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 单次看 Metaspace 容量和使用（单位 KB）</span>
+jstat<span class="w"> </span>-gcmetacapacity<span class="w"> </span>&lt;pid&gt;
+
+<span class="c1"># 每 1 秒一次，共 10 次，盯 MC / MU</span>
+jstat<span class="w"> </span>-gc<span class="w"> </span>&lt;pid&gt;<span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="m">10</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MC</td>
+<td>Metaspace 当前容量(committed, KB)</td>
+</tr>
+<tr>
+<td>MU</td>
+<td>Metaspace 已使用(KB)</td>
+</tr>
+<tr>
+<td>MCMN / MCMX</td>
+<td>最小 / 最大容量(MCMX 对应 -XX:MaxMetaspaceSize)</td>
+</tr>
+<tr>
+<td>CCSC / CCSU</td>
+<td>Compressed Class Space 容量 / 使用</td>
+</tr>
+<tr>
+<td>FGC / FGCT</td>
+<td>Full GC 次数 / 耗时</td>
+</tr>
+</tbody>
+</table>
+<p>判断：
+- MU 贴着 MCMX 不降 + FGC 频繁 → 元空间满了，正在疯狂 Full GC。
+- MU 随时间只涨不降 → 疑似类泄漏。</p>
+<h3 id="2-jstat-class">2. jstat -class —— 判断是否类泄漏（铁证）</h3>
+<div class="highlight"><pre><span></span><code>jstat<span class="w"> </span>-class<span class="w"> </span>&lt;pid&gt;<span class="w"> </span><span class="m">2000</span><span class="w"> </span><span class="m">20</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loaded</td>
+<td>累计加载的类数</td>
+</tr>
+<tr>
+<td>Unloaded</td>
+<td>累计卸载的类数</td>
+</tr>
+</tbody>
+</table>
+<p>判断：<strong>Loaded 持续上涨、Unloaded 几乎不动</strong> → 有东西不停产类却不卸载，确认泄漏。</p>
+<h3 id="3-jcmd-classloader">3. jcmd —— 定位是哪些类 / 哪个 ClassLoader</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 类直方图：哪些类占多少（能看到重复的动态类名）</span>
+jcmd<span class="w"> </span>&lt;pid&gt;<span class="w"> </span>GC.class_histogram<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-50
+
+<span class="c1"># 各 ClassLoader 加载了多少类、占多少元空间</span>
+jcmd<span class="w"> </span>&lt;pid&gt;<span class="w"> </span>VM.classloader_stats
+
+<span class="c1"># 看 Metaspace 相关启动参数</span>
+jcmd<span class="w"> </span>&lt;pid&gt;<span class="w"> </span>VM.flags<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>meta
+</code></pre></div>
+<p><strong>泄漏铁证</strong>：class_histogram 里出现大量<strong>同名前缀带序号</strong>的类：
+- <code>com.alibaba.fastjson.serializer.ASMSerializer_*</code> / <code>ASMDeserializer_*</code>
+- <code>$Proxy1234</code>、<code>GeneratedMethodAccessor*</code>
+- <code>...$$EnhancerByCGLIB$$*</code></p>
+<p>说明有代码在反复动态生成类。</p>
+<h3 id="4-nativememorytracking">4. NativeMemoryTracking —— 最精确（需重启加参数）</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 启动参数加：-XX:NativeMemoryTracking=summary</span>
+jcmd<span class="w"> </span>&lt;pid&gt;<span class="w"> </span>VM.native_memory<span class="w"> </span>summary<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;Class\|Metaspace&quot;</span>
+</code></pre></div>
+<h3 id="_9">排查顺序</h3>
+<ol>
+<li><code>jstat -gc &lt;pid&gt; 1000 10</code> 看 MU/FGC → 判断现在是否满了。</li>
+<li><code>jstat -class &lt;pid&gt;</code> 看 Loaded/Unloaded → 判断是否泄漏。</li>
+<li>若泄漏：<code>jcmd GC.class_histogram</code> + <code>VM.classloader_stats</code> → 定位是哪个库 / ClassLoader 在产类。</li>
+<li>若只是上限低：调大 <code>-XX:MaxMetaspaceSize</code>（如 256m → 512m）。</li>
+</ol>
+<h3 id="_10">常见类泄漏根因</h3>
+<ul>
+<li><strong>fastjson</strong> 用 ASM 为反序列化类型生成类；若每次都 <code>new TypeReference&lt;&gt;(){}</code> 构造匿名类型 → 持续产类。</li>
+<li><strong>cglib / 动态代理</strong>：反复创建代理类。</li>
+<li><strong>反复 new ClassLoader</strong> 但不释放。</li>
+<li><strong>Groovy / 脚本引擎</strong>：每次编译脚本生成新类。</li>
+</ul>
+<h2 id="_11">元空间满导致的连锁故障（真实案例）</h2>
+<p>一次生产事故的因果链：</p>
+<ol>
+<li>元空间(256m)耗尽 → <code>OutOfMemoryError: Metaspace</code>。</li>
+<li>JVM 加载新类失败 / 频繁 Full GC → 某个周期任务实例<strong>卡死收不了尾</strong>。</li>
+<li>调度框架(EasyJob)仍认为该实例「运行中」，后续每次触发的任务因配置 <code>concurrency=false</code> 被 <strong>non-concurrency 中止</strong>（<code>abort because of non-concurrency</code>）。</li>
+<li>worker 线程池 10 个线程集体 <strong>WAITING</strong> 空转，机器<strong>假死</strong>。</li>
+</ol>
+<p>排查提示：
+- 调度任务大面积 <code>abort because of non-concurrency</code> → 先找那个「一直运行中不结束」的实例，它是元凶。
+- 线程监控里全 WAITING 且「正在执行任务」为空，可能是卡死的业务任务不在该 worker 池，而在业务自己的异步线程池。
+- 应急：先重启 / 摘除不健康实例恢复调度，再定位元空间泄漏根因。</p>
+
+  <br>
+    
+
+    
+    
+      
+    
+
+  <div class="row wm-article-nav-buttons" role="navigation" aria-label="navigation">
+    
+    <div class="wm-article-nav pull-right">
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-default pull-right">
+        Next
+        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <a href="../java8%20%E6%96%B0%E7%89%B9%E6%80%A7/" class="btn btn-xs btn-link">
+        java8 新特性
+      </a>
+    </div>
+    
+    <div class="wm-article-nav">
+      <a href="../Docker/" class="btn btn-xs btn-default pull-left">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        Previous</a><a href="../Docker/" class="btn btn-xs btn-link">
+        Docker
+      </a>
+    </div>
+    
+  </div>
+
+    <br>
+</div>
+
+<footer class="container-fluid wm-page-content">
+      <p>
+        <a href="https://github.com/zhengzp2019/note/edit/master/docs/java/JVM内存与GC.md">Edit on note</a>
+      </p>
+  <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a> using <a href="https://github.com/gristlabs/mkdocs-windmill">Windmill</a> theme by Grist Labs.</p>
+</footer>
+
+</body>
+</html>
