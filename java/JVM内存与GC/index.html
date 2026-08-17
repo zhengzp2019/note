@@ -311,9 +311,11 @@ jstat<span class="w"> </span>-gc<span class="w"> </span>&lt;pid&gt;<span class="
 </tr>
 </tbody>
 </table>
-<p>判断：
-- MU 贴着 MCMX 不降 + FGC 频繁 → 元空间满了，正在疯狂 Full GC。
-- MU 随时间只涨不降 → 疑似类泄漏。</p>
+<p>判断：</p>
+<ul>
+<li>MU 贴着 MCMX 不降 + FGC 频繁 → 元空间满了，正在疯狂 Full GC。</li>
+<li>MU 随时间只涨不降 → 疑似类泄漏。</li>
+</ul>
 <h3 id="2-jstat-class">2. jstat -class —— 判断是否类泄漏（铁证）</h3>
 <div class="highlight"><pre><span></span><code>jstat<span class="w"> </span>-class<span class="w"> </span>&lt;pid&gt;<span class="w"> </span><span class="m">2000</span><span class="w"> </span><span class="m">20</span>
 </code></pre></div>
@@ -346,10 +348,12 @@ jcmd<span class="w"> </span>&lt;pid&gt;<span class="w"> </span>VM.classloader_st
 <span class="c1"># 看 Metaspace 相关启动参数</span>
 jcmd<span class="w"> </span>&lt;pid&gt;<span class="w"> </span>VM.flags<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>meta
 </code></pre></div>
-<p><strong>泄漏铁证</strong>：class_histogram 里出现大量<strong>同名前缀带序号</strong>的类：
-- <code>com.alibaba.fastjson.serializer.ASMSerializer_*</code> / <code>ASMDeserializer_*</code>
-- <code>$Proxy1234</code>、<code>GeneratedMethodAccessor*</code>
-- <code>...$$EnhancerByCGLIB$$*</code></p>
+<p><strong>泄漏铁证</strong>：class_histogram 里出现大量<strong>同名前缀带序号</strong>的类：</p>
+<ul>
+<li><code>com.alibaba.fastjson.serializer.ASMSerializer_*</code> / <code>ASMDeserializer_*</code></li>
+<li><code>$Proxy1234</code>、<code>GeneratedMethodAccessor*</code></li>
+<li><code>...$$EnhancerByCGLIB$$*</code></li>
+</ul>
 <p>说明有代码在反复动态生成类。</p>
 <h3 id="4-nativememorytracking">4. NativeMemoryTracking —— 最精确（需重启加参数）</h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># 启动参数加：-XX:NativeMemoryTracking=summary</span>
@@ -377,10 +381,12 @@ jcmd<span class="w"> </span>&lt;pid&gt;<span class="w"> </span>VM.native_memory<
 <li>调度框架(EasyJob)仍认为该实例「运行中」，后续每次触发的任务因配置 <code>concurrency=false</code> 被 <strong>non-concurrency 中止</strong>（<code>abort because of non-concurrency</code>）。</li>
 <li>worker 线程池 10 个线程集体 <strong>WAITING</strong> 空转，机器<strong>假死</strong>。</li>
 </ol>
-<p>排查提示：
-- 调度任务大面积 <code>abort because of non-concurrency</code> → 先找那个「一直运行中不结束」的实例，它是元凶。
-- 线程监控里全 WAITING 且「正在执行任务」为空，可能是卡死的业务任务不在该 worker 池，而在业务自己的异步线程池。
-- 应急：先重启 / 摘除不健康实例恢复调度，再定位元空间泄漏根因。</p>
+<p>排查提示：</p>
+<ul>
+<li>调度任务大面积 <code>abort because of non-concurrency</code> → 先找那个「一直运行中不结束」的实例，它是元凶。</li>
+<li>线程监控里全 WAITING 且「正在执行任务」为空，可能是卡死的业务任务不在该 worker 池，而在业务自己的异步线程池。</li>
+<li>应急：先重启 / 摘除不健康实例恢复调度，再定位元空间泄漏根因。</li>
+</ul>
 
   <br>
     
