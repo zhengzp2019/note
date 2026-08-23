@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="620" viewBox="0 0 1180 620" role="img" aria-labelledby="title desc">
+  <title id="title">Bian Que 三道防线</title>
+  <desc id="desc">从发布前、告警中、故障后三个阶段展示 Bian Que 的生产防线设计。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7ed"/><stop offset="1" stop-color="#f8fafc"/></linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#0f172a" flood-opacity="0.12"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10 Z" fill="#64748b"/></marker>
+    <style>
+      .title{font:700 28px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#0f172a}.sub{font:500 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#475569}.h{font:700 21px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#fff}.p{font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#334155}.s{font:500 13px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#64748b}.line{stroke:#64748b;stroke-width:2.4;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1180" height="620" rx="28" fill="url(#bg)"/>
+  <text x="590" y="52" text-anchor="middle" class="title">Bian Que 的「三道防线」</text>
+  <text x="590" y="82" text-anchor="middle" class="sub">将运维 Agent 从事后诊断前移到事前预防，并在事件中自动降噪与辅助决策</text>
+
+  <path d="M150 145 H1030" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="220" cy="145" r="13" fill="#10b981"/><circle cx="590" cy="145" r="13" fill="#f59e0b"/><circle cx="960" cy="145" r="13" fill="#7c3aed"/>
+  <text x="220" y="120" text-anchor="middle" class="p">发布前</text><text x="590" y="120" text-anchor="middle" class="p">告警中</text><text x="960" y="120" text-anchor="middle" class="p">故障后</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="190" width="320" height="330" rx="24" fill="#ffffff"/>
+    <rect x="430" y="190" width="320" height="330" rx="24" fill="#ffffff"/>
+    <rect x="790" y="190" width="320" height="330" rx="24" fill="#ffffff"/>
+  </g>
+  <rect x="70" y="190" width="320" height="74" rx="24" fill="#059669"/><rect x="430" y="190" width="320" height="74" rx="24" fill="#ea580c"/><rect x="790" y="190" width="320" height="74" rx="24" fill="#7c3aed"/>
+  <text x="230" y="236" text-anchor="middle" class="h">1. 发布拦截</text><text x="590" y="236" text-anchor="middle" class="h">2. 告警辅助</text><text x="950" y="236" text-anchor="middle" class="h">3. RCA + 故障缓解</text>
+
+  <text x="105" y="306" class="p">输入</text><text x="105" y="334" class="s">发布单、配置变更、代码 Diff</text><text x="105" y="358" class="s">历史事故、服务拓扑、核心指标</text>
+  <text x="105" y="404" class="p">Agent 动作</text><text x="105" y="432" class="s">变更风险评分、异常趋势预判</text><text x="105" y="456" class="s">灰度收敛、回滚建议、人工门禁</text>
+  <text x="105" y="498" class="p">目标：故障发生前拦截风险</text>
+
+  <text x="465" y="306" class="p">输入</text><text x="465" y="334" class="s">告警流、重复告警、衍生告警</text><text x="465" y="358" class="s">SLO、影响面、值班上下文</text>
+  <text x="465" y="404" class="p">Agent 动作</text><text x="465" y="432" class="s">聚合、去重、抑制、摘要生成</text><text x="465" y="456" class="s">合并事件、执行低风险 Runbook</text>
+  <text x="465" y="498" class="p">目标：减少告警风暴和人工噪声</text>
+
+  <text x="825" y="306" class="p">输入</text><text x="825" y="334" class="s">真实故障、指标异常、日志证据</text><text x="825" y="358" class="s">近期变更、依赖链、历史 Case</text>
+  <text x="825" y="404" class="p">Agent 动作</text><text x="825" y="432" class="s">影响面分析、根因候选排序</text><text x="825" y="456" class="s">证据链输出、缓解动作分级</text>
+  <text x="825" y="498" class="p">目标：缩短 MTTR，提高决策质量</text>
+
+  <path d="M390 355 H430" class="line"/><path d="M750 355 H790" class="line"/>
+  <rect x="170" y="552" width="840" height="44" rx="22" fill="#0f172a" opacity="0.88"/>
+  <text x="590" y="581" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="15" font-weight="600" fill="#fff">统一护栏：只读诊断 → 建议动作 → 低风险自动执行 → 高风险人工审批 → 复盘反馈</text>
+</svg>
